@@ -28,7 +28,6 @@ exports.newuser = (req, res) =>
 
 exports.adduser = (req, res, next) =>
 {
-    console.log(req.body);
     let user = new userModel(req.body);
     user.gamesCreated = new Array();
     user.gamesPlayed = new Array();
@@ -42,5 +41,58 @@ exports.adduser = (req, res, next) =>
 
 exports.authenticate = (req, res, next) =>
 {
-    
+    let email = req.body.email;
+    let password = req.body.password;
+
+    userModel.findOne({email: email})
+    .then(user =>
+    {
+        if (user)
+        {
+            user.comparePassword(password)
+            .then(result =>
+            {
+                if (result)
+                {
+                    req.session.user = user._id;
+                    res.redirect('/');
+                }
+                else
+                {
+                    res.redirect('/login');
+                }
+            });
+        }
+        else
+        {
+            res.redirect('/login');
+        }
+    })
+    .catch(err => next(err));
+}
+
+exports.logout = (req, res, next) =>
+{
+    req.session.destroy(err =>
+    {
+        if (err)
+        {
+            return next(err);
+        }
+        else
+        {
+            res.redirect('/');
+        }
+    });
+}
+
+exports.profile = (req, res, next) =>
+{
+    let user = req.session.user;
+    userModel.findById(user)
+    .then(user =>
+    {
+        res.render('./main/profile', {user});
+    })
+    .catch(err => next(err));
 }
