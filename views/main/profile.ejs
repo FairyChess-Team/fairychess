@@ -1,0 +1,18 @@
+<%- include('../partials/header.ejs') %>
+<% if (user) { %>
+    <h3>Welcome, <%= user.firstName + " " + user.lastName %></h3>
+    <h3>Games Created:</h3>
+    <% if (user.gamesCreated.length) { %>
+        <% user.gamesCreated.forEach(game => { %>
+            <a href='/games/<%= game._id %>'><p><%= game.title %></p></a>
+        <% }); %>
+    <% } %>
+    <h3>Games Played:</h3>
+    <% if (user.gamesPlayed.length) { %>
+        <% user.gamesPlayed.forEach(game => { %>
+            <a href='/games/<%= game._id %>'><p><%= game.title %></p></a>
+        <% }); %>
+    <% } %>
+<% } else { %>
+    <h3>Please log into your account to use this section of the application</h3>
+<% } %>

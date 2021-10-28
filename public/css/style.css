@@ -1,0 +1,17 @@
+nav {
+    overflow: hidden;
+    padding-left: 20px;
+    color: white;
+    background-color: green;
+    width: 100%;
+}
+
+nav a{
+    float: left;
+    display: block;
+    padding-right: 16px;
+    padding-bottom: 14px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+  }
