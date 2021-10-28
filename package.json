@@ -1,0 +1,28 @@
+{
+  "name": "fairychess",
+  "version": "1.0.0",
+  "description": "Create, edit and share custom chess games with FairyChess",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/milanthkr/fairychess.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/milanthkr/fairychess/issues"
+  },
+  "homepage": "https://github.com/milanthkr/fairychess#readme",
+  "dependencies": {
+    "connect-mongo": "^4.6.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "jquery": "^3.6.0",
+    "mongodb": "^4.1.3",
+    "mongoose": "^6.0.12",
+    "morgan": "^1.10.0"
+  }
+}
