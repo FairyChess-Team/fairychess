@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', controller.index);
 
-//router.post('/', controller.adduser)
+router.post('/', controller.adduser)
 
 router.get('/editor', controller.editor);
 
