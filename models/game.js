@@ -7,7 +7,7 @@ const gameSchema = new Schema(
     creator: {type: String, required: [true, 'cannot be empty']},
     chessPositions: {type: String},
     rating: {type: Number},
-    p1CapturedPieces: {type: String},
+    p1CapturedPieces: {type: Array},
     p2CapturedPieces: {type: Array},
 });
 

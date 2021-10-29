@@ -1,12 +1,16 @@
 <%- include('../partials/header.ejs')%>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<% if (user) { %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
-<div class="container">
-  <!-- The chess board -->
-  <div id="board" style="width: 500px; margin: auto"></div>
-</div>
+  <div class="container">
+    <!-- The chess board -->
+    <div id="board" style="width: 500px; margin: auto"></div>
+  </div>
 
-<script src="/js/game.js"></script>
+  <script src="/js/game.js"></script>
+<% } else { %>
+  <h3>Please log into your account to use this section of the application</h3>
+<% } %>
+
 </body>
-
 </html>

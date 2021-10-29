@@ -21,4 +21,6 @@ router.get('/logout', controller.logout);
 
 router.get('/profile', controller.profile);
 
+router.post('/save', controller.savegame);
+
 module.exports = router;

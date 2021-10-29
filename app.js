@@ -1,11 +1,12 @@
+const dotenv = require("dotenv");
 const express = require('express');
+const injector = require('express-script-injector');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
 const appRoutes = require('./routes/appRoute');
-const dotenv = require("dotenv");
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -21,6 +22,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
 .catch(err=>console.log(err.message));
 
 app.use(express.static('public'));
+//app.use(injector({path: __dirname + '/public/js'}))
 app.use(express.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));

@@ -22,6 +22,7 @@
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "express-script-injector": "^0.0.2",
     "express-session": "^1.17.2",
     "jquery": "^3.6.0",
     "method-override": "^3.0.0",
