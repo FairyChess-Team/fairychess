@@ -1,12 +1,17 @@
+body {
+    margin: 0;
+}
+
 nav {
     overflow: hidden;
     padding-left: 20px;
     color: white;
-    background-color: green;
+    background-color: lightslategrey;
     width: 100%;
 }
 
-nav a{
+nav a
+{
     float: left;
     display: block;
     padding-right: 16px;
@@ -14,6 +19,12 @@ nav a{
     text-align: center;
     text-decoration: none;
     color: white;
+}
+
+nav h2
+{
+    text-align: left; 
+    padding-right: 30px;
 }
 
 .center
