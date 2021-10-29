@@ -110,7 +110,6 @@ exports.profile = (req, res, next) =>
 exports.savegame = (req, res, next) =>
 {
     let game = gameModel(req.body);
-    game.chessPositions = "asdasdasd";
     game.rating = 0;
     game.p1CapturedPieces = new Array();
     game.p2CapturedPieces = new Array();

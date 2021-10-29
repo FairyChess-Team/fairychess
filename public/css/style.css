@@ -14,4 +14,11 @@ nav a{
     text-align: center;
     text-decoration: none;
     color: white;
-  }
+}
+
+.center
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
