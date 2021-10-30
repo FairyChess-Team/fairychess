@@ -1,9 +1,32 @@
 <%- include('../partials/header.ejs')%>
-<div class="container">
-    <!-- The chess board -->
-    <div id="board" style="width: 500px; margin: auto"></div>
-</div>
-<script src="/js/editor.js"></script>
+<% if (user) { %>
+    <h2 style="text-align: center;">Chess Editor</h2>
+    <div class="container">
+        <!-- The chess board -->
+        <div id="board" style="width: 500px; margin: auto"></div>
+        <br>
+        <br>
+        <div class="center">
+            <button id="clear">Clear Board</button>
+        </div>
+    </div>
+    <br>
+    <br>
+    <script src="/js/editor.js"></script>
+    <div class="center">
+        <form action='/save' method="POST">
+            <label for='title'>Title: </label><br>
+            <input type='text' name='title' id='title' required><br><br>
+            <label for='creator' id='creatorTitle'>Creator: </label><br>
+            <input type='text' name='creator' id='creator' value="<%= user.firstName + ' ' + user.lastName %>" readonly required><br><br>
+            <label for='chessPositions' id='positionTitle'>Position: </label><br>
+            <input type='text' name='chessPositions' id='chessPositions' value="" readonly required><br><br>
+            <button>Save Game</button>
+        </form>
+    </div>
+<% } else { %>
+    <h3>Please log into your account to use this section of the application</h3>
+<% } %>
 
 </body>
 </html>

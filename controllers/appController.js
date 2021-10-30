@@ -11,14 +11,24 @@ exports.login = (req, res) =>
     res.render('./main/login');
 }
 
-exports.editor = (req, res) =>
+exports.editor = (req, res, next) =>
 {
-    res.render('./main/editor');
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        res.render('./main/editor', {user: user});
+    })
+    .catch(err => next(err))
 }
 
 exports.player = (req, res) =>
 {
-    res.render('./main/player');
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        res.render('./main/player', {user});
+    })
+    .catch(err => next(err))
 }
 
 exports.newuser = (req, res) =>
@@ -95,4 +105,24 @@ exports.profile = (req, res, next) =>
         res.render('./main/profile', {user});
     })
     .catch(err => next(err));
+}
+
+exports.savegame = (req, res, next) =>
+{
+    let game = gameModel(req.body);
+    game.rating = 0;
+    game.p1CapturedPieces = new Array();
+    game.p2CapturedPieces = new Array();
+    game.save()
+    .then(result =>
+    {
+        let user = req.session.user;
+        userModel.updateOne({_id: user}, {$push: { gamesCreated: game }})
+        .then(user =>
+        {
+            res.redirect('/profile');
+        })
+        .catch(err => next(err));
+    })
+    .catch(err => next(err))
 }
