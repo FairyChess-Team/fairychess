@@ -23,4 +23,6 @@ router.get('/profile', controller.profile);
 
 router.post('/save', controller.savegame);
 
+router.get('/search', controller.search);
+
 module.exports = router;

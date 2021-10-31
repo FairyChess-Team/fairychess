@@ -126,3 +126,8 @@ exports.savegame = (req, res, next) =>
     })
     .catch(err => next(err))
 }
+
+exports.search = (req, res) =>
+{
+    res.render('./main/search');
+}
