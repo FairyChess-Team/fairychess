@@ -14,8 +14,11 @@
         <h2>Fairy Chess</h2>
         <a href='/'>Home</a>
         <a href='/editor'>Editor</a>
-        <a href='/new'>Sign Up</a>
-        <a href='/login'>Log In</a>
-        <a href='/profile'>Profile</a>
-        <a href='/logout'>Logout</a>
+        <% if (!user) { %>
+            <a href='/new'>Sign Up</a>
+            <a href='/login'>Log In</a>
+        <% } else { %>
+            <a href='/profile'>Profile</a>
+            <a href='/logout'>Logout</a>
+        <% } %>
     </nav>
