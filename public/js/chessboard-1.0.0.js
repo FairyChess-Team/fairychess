@@ -219,7 +219,7 @@
   }
 
   function validPieceCode (code) {
-    return isString(code) && code.search(/^[bw][KQRNBP]$/) !== -1
+    return isString(code) && code.search(/^[bw][KQRNBPDL]$/) !== -1
   }
 
   if (RUN_ASSERTS) {
@@ -252,7 +252,7 @@
     // check each section
     for (var i = 0; i < numColumns; i++) {
       if (chunks[i].length !== numColumns ||
-          chunks[i].search(/[^kqrnbpKQRNBP1]/) !== -1) {
+          chunks[i].search(/[^kqrnbpdlKQRNBPDL]/) !== -1) {
         return false
       }
     }
@@ -796,7 +796,7 @@
       }
 
       // spare pieces
-      var pieces = 'KQRNBP'.split('')
+      var pieces = 'KQRNBPDL'.split('')
       for (i = 0; i < pieces.length; i++) {
         var whitePiece = 'w' + pieces[i]
         var blackPiece = 'b' + pieces[i]
@@ -903,9 +903,9 @@
     }
 
     function buildSparePiecesHTML (color) {
-      var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP']
+      var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', "wL", "wD"]
       if (color === 'black') {
-        pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP']
+        pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', 'bL', "bD"]
       }
 
       var html = ''
