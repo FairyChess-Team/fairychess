@@ -4,12 +4,22 @@ const mongoose = require('mongoose');
 
 exports.index = (req, res) =>
 {
-    res.render('./main/index');
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        res.render('./main/index', {user: user});
+    })
+    .catch(err => next(err))
 };
 
 exports.login = (req, res) =>
 {
-    res.render('./main/login');
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        res.render('./main/login', {user: user});
+    })
+    .catch(err => next(err))
 }
 
 exports.editor = (req, res, next) =>
@@ -27,14 +37,19 @@ exports.player = (req, res) =>
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/player', {user});
+        res.render('./main/player', {user: user});
     })
     .catch(err => next(err))
 }
 
 exports.newuser = (req, res) =>
 {
-    res.render('./main/new');
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        res.render('./main/new', {user: user});
+    })
+    .catch(err => next(err))
 }
 
 exports.adduser = (req, res, next) =>
