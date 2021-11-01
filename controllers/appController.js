@@ -1,5 +1,6 @@
 const userModel = require('../models/user');
 const gameModel = require('../models/game');
+const mongoose = require('mongoose');
 
 exports.index = (req, res) =>
 {
@@ -125,4 +126,17 @@ exports.savegame = (req, res, next) =>
         .catch(err => next(err));
     })
     .catch(err => next(err))
+}
+
+exports.delete = (req, res, next) =>
+{
+    let gameId = req.params._id;
+    let user = req.session.user;
+
+    userModel.updateOne({_id: user}, { $pull: { gamesCreated: {_id: mongoose.Types.ObjectId(gameId)}}})
+    .then(user =>
+    {
+        res.redirect('/profile');
+    })
+    .catch(err => next(err));
 }
