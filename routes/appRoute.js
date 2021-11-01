@@ -23,4 +23,6 @@ router.get('/profile', controller.profile);
 
 router.post('/save', controller.savegame);
 
+router.delete('/delete/:_id', controller.delete);
+
 module.exports = router;
