@@ -252,7 +252,7 @@
     // check each section
     for (var i = 0; i < numColumns; i++) {
       if (chunks[i].length !== numColumns ||
-          chunks[i].search(/[^kqrnbpdlKQRNBPDL]/) !== -1) {
+          chunks[i].search(/[^kqrnbpdlKQRNBP1DL]/) !== -1) {
         return false
       }
     }
