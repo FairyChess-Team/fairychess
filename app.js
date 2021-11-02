@@ -32,17 +32,11 @@ app.use(session(
     secret: `${process.env.SECRET}`,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 60*60*1000 },
+    cookie: { maxAge: 60*60*1000, httpOnly: true },
     store: new MongoStore(
     {
         mongoUrl: `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_POINTER}`
     })
 }));
-
-app.use((req, res, next) =>
-{
-    console.log(req.session);
-    next();
-});
 
 app.use('/', appRoutes);
