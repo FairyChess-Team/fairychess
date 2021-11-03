@@ -66,7 +66,7 @@ exports.adduser = (req, res, next) =>
     {
         if (err.code === 11000)
         {
-            err = new Error("Username has already ben used");
+            err = new Error("Username has already been used");
             err.status = 400;
             return next(err);
         }
