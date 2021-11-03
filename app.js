@@ -40,3 +40,21 @@ app.use(session(
 }));
 
 app.use('/', appRoutes);
+
+app.use((req, res, next) =>
+{
+    let error = new Error("The server cannot find " + req.url);
+    error.status = 404;
+    next(error);
+});
+
+app.use((error, req, res, next) =>
+{
+    if (!error.status)
+    {
+        error.status = 500;
+        error.message = "Internal Server Error";
+    }
+
+    res.render("./main/error", { user: req.session.user, error: error });
+});
