@@ -62,7 +62,16 @@ exports.adduser = (req, res, next) =>
     {
         res.redirect('/login');
     })
-    .catch(err => next(err));
+    .catch(err => 
+    {
+        if (err.code === 11000)
+        {
+            err = new Error("Username has already ben used");
+            err.status = 400;
+            return next(err);
+        }
+        next(err);
+    });
 }
 
 exports.authenticate = (req, res, next) =>
