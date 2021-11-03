@@ -25,4 +25,6 @@ router.post('/save', controller.savegame);
 
 router.get('/search', controller.search);
 
+router.post('/search', controller.searchresult);
+
 module.exports = router;

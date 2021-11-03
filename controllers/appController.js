@@ -131,3 +131,24 @@ exports.search = (req, res) =>
 {
     res.render('./main/search');
 }
+
+//const bodyparser = require('body-parser');
+//exports.use(bodyparser.urlencoded({ extended: true }));
+
+exports.searchresult = (req, res, next) =>
+{
+    let text = req.body.search; 
+    let user = req.session.user;
+
+    userModel.findOne({gamesCreated: text})
+    .then(user =>
+    {
+        gameModel.findOne({title: text})
+        .then(result =>
+        {
+            res.render('./main/search', {result});   
+        })
+        .catch(err => next(err));
+    })
+    .catch(err => next(err))
+}
