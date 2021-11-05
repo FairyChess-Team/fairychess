@@ -76,10 +76,10 @@ exports.adduser = (req, res, next) =>
 
 exports.authenticate = (req, res, next) =>
 {
-    let email = req.body.email;
+    let username = req.body.username;
     let password = req.body.password;
 
-    userModel.findOne({email: email})
+    userModel.findOne({username: username})
     .then(user =>
     {
         if (user)
