@@ -7,7 +7,7 @@ exports.index = (req, res) =>
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/index', {user: user});
+        res.render('./main/index');
     })
     .catch(err => next(err))
 };
@@ -17,7 +17,7 @@ exports.login = (req, res) =>
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/login', {user: user});
+        res.render('./main/login');
     })
     .catch(err => next(err))
 }
@@ -27,7 +27,24 @@ exports.editor = (req, res, next) =>
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/editor', {user: user});
+        res.render('./main/editor', {user: user, game: null});
+    })
+    .catch(err => next(err))
+}
+
+exports.editexisting = (req, res, next) =>
+{
+    let id = req.params.id;
+    /*console.log(id);
+    userModel.find({'gamesCreated._id':`${id}`})
+    .then(result => console.log(result))
+    .catch(err => next(err));*/
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        console.log(id);
+        let game = user.gamesCreated.find(game => game._id = id);
+        res.render('./main/editor', {game});
     })
     .catch(err => next(err))
 }
@@ -37,7 +54,7 @@ exports.player = (req, res) =>
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/player', {user: user});
+        res.render('./main/player');
     })
     .catch(err => next(err))
 }
@@ -47,7 +64,7 @@ exports.newuser = (req, res) =>
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/new', {user: user});
+        res.render('./main/new');
     })
     .catch(err => next(err))
 }

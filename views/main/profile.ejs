@@ -4,7 +4,7 @@
     <h3>Games Created:</h3>
     <% if (user.gamesCreated.length) { %>
         <% user.gamesCreated.forEach(game => { %>
-            <a href='/games/<%= game._id %>'><p><%= game.title %></p></a>
+            <a href='/editor/<%= game._id %>'><p><%= game.title %></p></a>
             <form action="/delete/<%= game._id %>" method="POST">
                 <button type="submit" formmethod="POST" formaction="/delete/<%= game._id %>?_method=DELETE">Delete</button>
             </form>
