@@ -22,7 +22,6 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
 .catch(err=>console.log(err.message));
 
 app.use(express.static('public'));
-//app.use(injector({path: __dirname + '/public/js'}))
 app.use(express.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
@@ -39,6 +38,12 @@ app.use(session(
     })
 }));
 
+app.use((req, res, next) =>
+{
+    res.locals.user = req.session.user || null;
+    next();
+});
+
 app.use('/', appRoutes);
 
 app.use((req, res, next) =>
@@ -50,11 +55,12 @@ app.use((req, res, next) =>
 
 app.use((error, req, res, next) =>
 {
+    console.log(error);
     if (!error.status)
     {
         error.status = 500;
         error.message = "Internal Server Error";
     }
 
-    res.render("./main/error", { user: req.session.user, error: error });
+    res.render("./main/error", { error: error });
 });

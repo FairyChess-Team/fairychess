@@ -1,5 +1,6 @@
 const express = require('express');
 const controller = require('../controllers/appController');
+const authentication = require('../middlewares/authentication');
 
 const router = express.Router();
 
@@ -7,22 +8,26 @@ router.get('/', controller.index);
 
 router.post('/', controller.adduser)
 
-router.get('/editor', controller.editor);
+router.get('/editor', authentication.loggedIn, controller.editor);
 
-router.get('/login', controller.login);
+router.get('/editor/:id', authentication.loggedIn, controller.editexisting);
 
-router.post('/login', controller.authenticate)
+router.get('/login', authentication.currentlyGuest, controller.login);
 
-router.get('/new', controller.newuser);
+router.post('/login', authentication.currentlyGuest, controller.authenticate)
 
-router.get('/player', controller.player);
+router.get('/new', authentication.currentlyGuest, controller.newuser);
 
-router.get('/logout', controller.logout);
+router.get('/player', authentication.loggedIn, controller.player);
 
-router.get('/profile', controller.profile);
+router.get('/logout', authentication.loggedIn, controller.logout);
 
-router.post('/save', controller.savegame);
+router.get('/profile', authentication.loggedIn, controller.profile);
 
-router.delete('/delete/:_id', controller.delete);
+router.post('/save', authentication.loggedIn, controller.savegame);
+
+router.put('/save/:id', authentication.loggedIn, controller.saveexistinggame)
+
+router.delete('/delete/:id', authentication.loggedIn, controller.delete);
 
 module.exports = router;
