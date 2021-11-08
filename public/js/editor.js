@@ -1,8 +1,4 @@
-function resetFEN()
-{
-    let FEN = document.getElementById('FENstring').value;
-    return FEN;
-}
+let FEN = document.getElementById('FENstring').value;
 
 function onDrop(source, target, piece, newPos, oldPos, orientation)
 {
@@ -11,12 +7,10 @@ function onDrop(source, target, piece, newPos, oldPos, orientation)
 
 var board = Chessboard('board', {
     draggable: true,
-    position: resetFEN(),
+    position: FEN,
     dropOffBoard: 'trash',
     sparePieces: true,
     onDrop: onDrop
 });
 
 $('#clear').on('click', board.clear);
-
-console.log(resetFEN());

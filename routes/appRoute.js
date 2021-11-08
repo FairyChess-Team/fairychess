@@ -26,6 +26,8 @@ router.get('/profile', authentication.loggedIn, controller.profile);
 
 router.post('/save', authentication.loggedIn, controller.savegame);
 
-router.delete('/delete/:_id', authentication.loggedIn, controller.delete);
+router.put('/save/:id', authentication.loggedIn, controller.saveexistinggame)
+
+router.delete('/delete/:id', authentication.loggedIn, controller.delete);
 
 module.exports = router;

@@ -22,7 +22,6 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
 .catch(err=>console.log(err.message));
 
 app.use(express.static('public'));
-//app.use(injector({path: __dirname + '/public/js'}))
 app.use(express.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));

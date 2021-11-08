@@ -1439,6 +1439,10 @@
     // clear the board
     widget.clear = function (useAnimation) {
       widget.position({}, useAnimation)
+
+      // ONLY FOR THE EDITOR FOR FAIRYCHESS, DO NOT TOUCH
+      if ($("#chessPositions"))
+        $("#chessPositions").val("");
     }
 
     // remove the widget from the page

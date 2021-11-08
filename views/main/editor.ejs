@@ -20,14 +20,26 @@
 </form>
 <script src="/js/editor.js"></script>
 <div class="center">
-    <form action='/save' method="POST">
-        <label for='title'>Title: </label><br>
-        <input type='text' name='title' id='title' required><br><br>
+    <% if (!game) { %>
+        <form action='/save' method="POST">
+    <% } else { %>
+        <form action='/save/<%= game._id %>?_method=PUT' method="POST">
+    <% } %>
+    <label for='title'>Title: </label><br>
+    <% if (game) { %>
+        <input type='text' name='title' id='title' value="<%= game.title %>" required><br><br>
+        <label for='creator' id='creatorTitle'>Creator: </label><br>
+        <input type='text' name='creator' id='creator' value="<%= user.firstName + ' ' + user.lastName %>" readonly required><br><br>
+        <label for='chessPositions' id='positionTitle'>Position: </label><br>
+        <input type='text' name='chessPositions' id='chessPositions' value="<%= game.chessPositions %>" readonly required><br><br>
+    <% } else { %>
+        <input type='text' name='title' id='title' value="" required><br><br>
         <label for='creator' id='creatorTitle'>Creator: </label><br>
         <input type='text' name='creator' id='creator' value="<%= user.firstName + ' ' + user.lastName %>" readonly required><br><br>
         <label for='chessPositions' id='positionTitle'>Position: </label><br>
         <input type='text' name='chessPositions' id='chessPositions' value="" readonly required><br><br>
-        <button>Save Game</button>
+    <% } %>
+    <button>Save Game</button>
     </form>
 </div>
 
