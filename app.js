@@ -1,6 +1,5 @@
 const dotenv = require("dotenv");
 const express = require('express');
-const injector = require('express-script-injector');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
