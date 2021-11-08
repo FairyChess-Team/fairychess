@@ -44,12 +44,14 @@ exports.editexisting = (req, res, next) =>
     .catch(err => next(err))
 }
 
-exports.player = (req, res) =>
+exports.previewgame = (req, res) =>
 {
+    let id = req.params.id;
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/player');
+        let game = user.gamesCreated.find(game => game._id == id);
+        res.render('./main/previewer', {game});
     })
     .catch(err => next(err))
 }
@@ -184,7 +186,6 @@ exports.saveexistinggame = (req, res, next) =>
         return next(error);
     }
     let user = req.session.user;
-    console.log(user);
     userModel.findOneAndUpdate(
         {
             _id: user,
@@ -201,7 +202,6 @@ exports.saveexistinggame = (req, res, next) =>
     )
     .then(result =>
     {
-        console.log("a result that is ", result);
         res.redirect('/profile');
     })
     .catch(err => next(err))

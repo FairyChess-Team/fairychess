@@ -18,7 +18,7 @@ router.post('/login', authentication.currentlyGuest, controller.authenticate)
 
 router.get('/new', authentication.currentlyGuest, controller.newuser);
 
-router.get('/player', authentication.loggedIn, controller.player);
+router.get('/preview/:id', authentication.loggedIn, controller.previewgame);
 
 router.get('/logout', authentication.loggedIn, controller.logout);
 

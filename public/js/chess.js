@@ -37,8 +37,10 @@ var Chess = function (fen) {
   var ROOK = 'r'
   var QUEEN = 'q'
   var KING = 'k'
+  var LANCER = 'l'
+  var DRAGON = 'd'
 
-  var SYMBOLS = 'pnbrqkPNBRQK'
+  var SYMBOLS = 'pnbrqkPNBRQKdDlL'
 
   var DEFAULT_POSITION =
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
@@ -56,6 +58,8 @@ var Chess = function (fen) {
     r: [-16, 1, 16, -1],
     q: [-17, -16, -15, 1, 17, 16, 15, -1],
     k: [-17, -16, -15, 1, 17, 16, 15, -1],
+    l: [16],
+    d: [-17, -15, 17, 15, -16, 1, 16, -1]
   }
 
   // prettier-ignore
@@ -336,7 +340,7 @@ var Chess = function (fen) {
           sum_fields += parseInt(rows[i][k], 10)
           previous_was_number = true
         } else {
-          if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
+          if (!/^[pnbrqkPNBRQKdDlL]$/.test(rows[i][k])) {
             return { valid: false, error_number: 9, error: errors[9] }
           }
           sum_fields += 1
@@ -462,13 +466,14 @@ var Chess = function (fen) {
 
     var sq = SQUARES[square]
 
-    /* don't let the user place more than one king */
+    /* Bypass the no double king piece move */
+    /*
     if (
       piece.type == KING &&
       !(kings[piece.color] == EMPTY || kings[piece.color] == sq)
     ) {
       return false
-    }
+    } */
 
     board[sq] = { type: piece.type, color: piece.color }
     if (piece.type === KING) {
@@ -1144,7 +1149,7 @@ var Chess = function (fen) {
     // this should parse invalid SAN like: Pe2-e4, Rc1c4, Qf3xf7
     if (sloppy) {
       var matches = clean_move.match(
-        /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
+        /([pnbrqkPNBRQKdDlL])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
       )
       if (matches) {
         var piece = matches[1]

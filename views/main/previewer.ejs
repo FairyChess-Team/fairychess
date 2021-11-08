@@ -1,0 +1,17 @@
+<%- include('../partials/header.ejs')%>
+<h2 style="text-align: center;">Chess Player</h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<div class="container">
+<!-- The chess board -->
+<form>
+  <% if (game) { %>
+      <input type="hidden" id="FENstring" name="FENstring" value="<%= game.chessPositions %>">
+  <% } else { %>
+      <input type="hidden" id="FENstring" name="FENstring" value="">
+  <% } %>
+</form>
+<div id="board" style="width: 500px; margin: auto"></div>
+</div>
+<script src="/js/game.js"></script>
+</body>
+</html>
