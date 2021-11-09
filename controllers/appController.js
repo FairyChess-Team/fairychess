@@ -39,19 +39,34 @@ exports.editexisting = (req, res, next) =>
     .then(user =>
     {
         let game = user.gamesCreated.find(game => game._id == id);
-        res.render('./main/editor', {user, game});
+        if (game)
+            res.render('./main/editor', {user, game});
+        else
+        {
+            let err = new Error(`You cannot edit the game with ID "${id}" as it does not exist on your account`);
+            err.status = 400;
+            next(err);
+        }
+
     })
     .catch(err => next(err))
 }
 
-exports.previewgame = (req, res) =>
+exports.previewgame = (req, res, next) =>
 {
     let id = req.params.id;
     userModel.findById(req.session.user)
     .then(user =>
     {
         let game = user.gamesCreated.find(game => game._id == id);
-        res.render('./main/previewer', {game});
+        if (game)
+            res.render('./main/previewer', {game});
+        else
+        {
+            let err = new Error(`You cannot preview the game with ID "${id}" as it does not exist on your account`);
+            err.status = 400;
+            next(err);
+        }
     })
     .catch(err => next(err))
 }

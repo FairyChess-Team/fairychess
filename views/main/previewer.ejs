@@ -4,11 +4,8 @@
 <div class="container">
 <!-- The chess board -->
 <form>
-  <% if (game) { %>
-      <input type="hidden" id="FENstring" name="FENstring" value="<%= game.chessPositions %>">
-  <% } else { %>
-      <input type="hidden" id="FENstring" name="FENstring" value="">
-  <% } %>
+<input type="hidden" id="FENstring" name="FENstring" value="<%= game.chessPositions %>">
+<input type="hidden" id="FENstring" name="FENstring" value="">
 </form>
 <div id="board" style="width: 500px; margin: auto"></div>
 </div>
