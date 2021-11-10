@@ -59,8 +59,9 @@ var Chess = function (fen) {
     q: [-17, -16, -15, 1, 17, 16, 15, -1],
     k: [-17, -16, -15, 1, 17, 16, 15, -1],
     l: [16],
-    d: [16, -16, 1, -1]
+    d: [[-17,1], -16, [-15,1], 1, [17, 1], 16, [15, 1], -1] //second element in each offset element (for ones that are arrays) is how many moves
   }
+
 
   // prettier-ignore
   var ATTACKS = [
@@ -526,12 +527,45 @@ var Chess = function (fen) {
         board[from].type === PAWN &&
         (rank(to) === RANK_8 || rank(to) === RANK_1)
       ) {
-        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT]
+        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, DRAGON, LANCER]
         for (var i = 0, len = pieces.length; i < len; i++) {
           moves.push(build_move(board, from, to, flags, pieces[i]))
         }
       } else {
         moves.push(build_move(board, from, to, flags))
+      }
+    }
+
+    function generate_unlimited_moves(square, offset, board, moves, i, BITS, piece) {
+      while (true) {
+        square += offset
+        if (square & 0x88) break
+
+        if (board[square] == null) {
+          add_move(board, moves, i, square, BITS.NORMAL)
+        } else {
+          if (board[square].color === us) break
+          add_move(board, moves, i, square, BITS.CAPTURE)
+          break
+        }
+
+        /* break, if knight or king */
+        if (piece.type === 'n' || piece.type === 'k') break
+      }
+    }
+
+    function generate_move_by_size(square, offset, board, moves, i, BITS, piece, numMoves) {
+      for(k = 0; k < numMoves; k++) {
+        square += offset
+        if (square & 0x88) break
+
+        if (board[square] == null) {
+          add_move(board, moves, i, square, BITS.NORMAL)
+        } else {
+          if (board[square].color === us) break
+          add_move(board, moves, i, square, BITS.CAPTURE)
+          break //milanreallychange
+        }
       }
     }
 
@@ -606,23 +640,21 @@ var Chess = function (fen) {
         }
       } else if (piece_type === true || piece_type === piece.type) {
         for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
-          var offset = PIECE_OFFSETS[piece.type][j]
+          var offset_amount = PIECE_OFFSETS[piece.type][j]
+          var test = "Hello"
           var square = i
-
-          while (true) {
-            square += offset
-            if (square & 0x88) break
-
-            if (board[square] == null) {
-              add_move(board, moves, i, square, BITS.NORMAL)
-            } else {
-              if (board[square].color === us) break
-              add_move(board, moves, i, square, BITS.CAPTURE)
-              break
-            }
-
-            /* break, if knight or king */
-            if (piece.type === 'n' || piece.type === 'k') break
+          /*
+          Check if there is an array that exists with a PIECE_OFFSETS element
+          If such an array exists, use the first element for offset and second element for how many spaces
+          a piece can move
+          */
+          if (offset_amount.constructor === Array) { //if offset is an array, this means that allowed moves are limited in jth direction
+            let numMoves = offset_amount[1]
+            let offset_amount_for_limit = offset_amount[0]
+            generate_move_by_size(square, offset_amount_for_limit, board, moves, i, BITS, piece, numMoves)
+          }
+          else {
+            generate_unlimited_moves(square, offset_amount, board, moves, i, BITS, piece)
           }
         }
       }
@@ -1296,6 +1328,8 @@ var Chess = function (fen) {
     ROOK: ROOK,
     QUEEN: QUEEN,
     KING: KING,
+    DRAGON: DRAGON,
+    LANCER: LANCER,
     SQUARES: (function () {
       /* from the ECMA-262 spec (section 12.6.4):
        * "The mechanics of enumerating the properties ... is
