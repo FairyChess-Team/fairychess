@@ -58,8 +58,13 @@ var Chess = function (fen) {
     r: [-16, 1, 16, -1],
     q: [-17, -16, -15, 1, 17, 16, 15, -1],
     k: [-17, -16, -15, 1, 17, 16, 15, -1],
-    l: [16],
+    l: [-16],
     d: [[-17,1], -16, [-15,1], 1, [17, 1], 16, [15, 1], -1] //second element in each offset element (for ones that are arrays) is how many moves
+  }
+
+
+  var BLACK_PIECE_OFFSETS = {
+    l: [16]
   }
 
 
@@ -538,9 +543,14 @@ var Chess = function (fen) {
 
     function generate_unlimited_moves(square, offset, board, moves, i, BITS, piece) {
       while (true) {
+        // if (piece.type == 'l' && piece.color == 'b') {
+        //   offset = 16
+        // }
+        // else if (piece.type == 'l' && piece.color == 'w'){
+        //   offset = -16
+        // }
         square += offset
         if (square & 0x88) break
-
         if (board[square] == null) {
           add_move(board, moves, i, square, BITS.NORMAL)
         } else {
@@ -639,9 +649,17 @@ var Chess = function (fen) {
           }
         }
       } else if (piece_type === true || piece_type === piece.type) {
-        for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
-          var offset_amount = PIECE_OFFSETS[piece.type][j]
-          var test = "Hello"
+        console.log(piece)
+        let piece_offset_array = PIECE_OFFSETS[piece.type]
+        /*
+        If a piece has offsets (directions) that are different when black, then set piece_offset_array to those
+        respective directions
+         */
+        if (piece.type in BLACK_PIECE_OFFSETS && piece.color === 'b') {
+          piece_offset_array = BLACK_PIECE_OFFSETS[piece.type]
+        }
+        for (var j = 0, len = piece_offset_array.length; j < len; j++) {
+          var offset_amount = piece_offset_array[j]
           var square = i
           /*
           Check if there is an array that exists with a PIECE_OFFSETS element
