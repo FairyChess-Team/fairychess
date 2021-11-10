@@ -5,10 +5,14 @@
     <% if (user.gamesCreated.length) { %>
         <% user.gamesCreated.forEach(game => { %>
             <a href='/editor/<%= game._id %>'><p><%= game.title %></p></a>
+            <div class='thumbnail'>
+                <iframe frameBorder='0' src='/thumbnail/<%= game._id %>'></iframe>
+            </div>
             <form>
                 <button type="submit" formmethod="POST" formaction="/delete/<%= game._id %>?_method=DELETE">Delete</button>
                 <button formmethod="GET" formaction="/preview/<%= game._id %>">Preview</button>
             </form>
+            <br>
         <% }); %>
     <% } %>
     <h3>Games Played:</h3>

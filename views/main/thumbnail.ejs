@@ -10,15 +10,13 @@
     <link rel="stylesheet" type="text/css" href="/css/chessboard-1.0.0.min.css">
 </head>
 <body>
-    <nav>
-        <h2>Fairy Chess</h2>
-        <a href='/'>Home</a>
-        <% if (!user) { %>
-            <a href='/new'>Sign Up</a>
-            <a href='/login'>Log In</a>
-        <% } else { %>
-            <a href='/editor'>Editor</a>
-            <a href='/profile'>Profile</a>
-            <a href='/logout'>Logout</a>
-        <% } %>
-    </nav>
+<div class="container">
+    <!-- The chess board -->
+    <div id="board" style="width: 250px; margin: auto"></div>
+</div>
+<form>
+    <input type="hidden" id="FENstring" name="FENstring" value="<%= game.chessPositions %>">
+</form>
+<script src="/js/thumbnail.js"></script>
+</body>
+</html>

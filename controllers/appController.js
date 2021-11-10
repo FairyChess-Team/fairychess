@@ -2,7 +2,7 @@ const userModel = require('../models/user');
 const gameModel = require('../models/game');
 const mongoose = require('mongoose');
 
-exports.index = (req, res) =>
+exports.index = (req, res, next) =>
 {
     userModel.findById(req.session.user)
     .then(user =>
@@ -12,7 +12,7 @@ exports.index = (req, res) =>
     .catch(err => next(err))
 };
 
-exports.login = (req, res) =>
+exports.login = (req, res, next) =>
 {
     userModel.findById(req.session.user)
     .then(user =>
@@ -246,3 +246,16 @@ exports.delete = (req, res, next) =>
     })
     .catch(err => next(err));
 }
+
+exports.generatethumbnail = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/thumbnail', {game});
+    })
+    .catch(err => next(err))
+} 
