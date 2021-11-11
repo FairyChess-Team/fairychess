@@ -36,8 +36,8 @@ nav h2
 
 .thumbnail iframe
 {
-    width: 275px;
-    height: 275px;
+    width: 260px;
+    height: 260px;
 }
 
 .sideAdjust
@@ -48,4 +48,20 @@ nav h2
 .itemAdjust
 {
     flex: 1;
+}
+
+.success 
+{
+    background: green;
+    color: #fff;
+    text-align: center;
+    padding: 10px 10px;
+}
+  
+.error 
+{
+    background: red;
+    color: #fff;
+    text-align: center;
+    padding: 10px 10px;
 }

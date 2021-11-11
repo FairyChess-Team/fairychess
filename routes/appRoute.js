@@ -30,6 +30,6 @@ router.put('/save/:id', authentication.loggedIn, controller.saveexistinggame)
 
 router.delete('/delete/:id', authentication.loggedIn, controller.delete);
 
-router.get('/thumbnail/:id', controller.generatethumbnail);
+router.get('/thumbnail/:id', authentication.loggedIn, controller.generatethumbnail);
 
 module.exports = router;
