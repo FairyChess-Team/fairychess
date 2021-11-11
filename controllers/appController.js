@@ -2,24 +2,14 @@ const userModel = require('../models/user');
 const gameModel = require('../models/game');
 const mongoose = require('mongoose');
 
-exports.index = (req, res, next) =>
+exports.index = (req, res) =>
 {
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        res.render('./main/index');
-    })
-    .catch(err => next(err))
+    res.render('./main/index');
 };
 
-exports.login = (req, res, next) =>
+exports.login = (req, res) =>
 {
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        res.render('./main/login');
-    })
-    .catch(err => next(err))
+    res.render('./main/login');
 }
 
 exports.editor = (req, res, next) =>
@@ -27,7 +17,7 @@ exports.editor = (req, res, next) =>
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/editor', {user: user, game: null});
+        res.render('./main/editor', {user, game: null});
     })
     .catch(err => next(err))
 }
@@ -73,12 +63,7 @@ exports.previewgame = (req, res, next) =>
 
 exports.newuser = (req, res) =>
 {
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        res.render('./main/new');
-    })
-    .catch(err => next(err))
+    res.render('./main/new');
 }
 
 exports.adduser = (req, res, next) =>
@@ -119,6 +104,7 @@ exports.authenticate = (req, res, next) =>
                 if (result)
                 {
                     req.session.user = user._id;
+                    req.flash('success', 'Successfully logged in');
                     res.redirect('/');
                 }
                 else

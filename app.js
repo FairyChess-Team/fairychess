@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 const express = require('express');
+const flash = require('connect-flash');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
@@ -37,9 +38,13 @@ app.use(session(
     })
 }));
 
+app.use(flash());
+
 app.use((req, res, next) =>
 {
     res.locals.user = req.session.user || null;
+    res.locals.errors = req.flash('error');
+    res.locals.successes = req.flash('success');
     next();
 });
 

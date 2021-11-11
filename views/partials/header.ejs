@@ -22,3 +22,17 @@
             <a href='/logout'>Logout</a>
         <% } %>
     </nav>
+    <% if (errors.length > 0) { %>
+        <% errors.forEach(error => { %>
+            <div class='error'>
+                <%= error %>
+            </div> 
+        <% }); %>
+    <% } %>
+    <% if (successes.length > 0) { %>
+        <% successes.forEach(success => { %>
+            <div class='success'>
+                <%= success %>
+            </div> 
+        <% }); %>
+    <% } %>
