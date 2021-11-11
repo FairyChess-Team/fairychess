@@ -3,12 +3,25 @@
     <h3>Welcome, <%= user.firstName + " " + user.lastName + " (" + user.username + ")" %></h3>
     <h3>Games Created:</h3>
     <% if (user.gamesCreated.length) { %>
-        <% user.gamesCreated.forEach(game => { %>
-            <a href='/editor/<%= game._id %>'><p><%= game.title %></p></a>
-            <form action="/delete/<%= game._id %>" method="POST">
-                <button type="submit" formmethod="POST" formaction="/delete/<%= game._id %>?_method=DELETE">Delete</button>
-            </form>
-        <% }); %>
+        <% for (var i = 0; i < user.gamesCreated.length; i++) { %>
+            <% if (i % 6 == 0 && i != 0) { %>
+                <br><br>
+            <% } %>
+            <div class='sideAdjust'>
+                <div class='itemAdjust'>
+                    <p><%= user.gamesCreated[i].title %></p>
+                    <div class='thumbnail'>
+                        <iframe frameBorder='0' src='/thumbnail/<%= user.gamesCreated[i]._id %>'></iframe>
+                    </div>
+                    <form>
+                        <button formmethod="GET" formaction="/editor/<%= user.gamesCreated[i]._id %>">Edit</button>
+                        <button formmethod="GET" formaction="/preview/<%= user.gamesCreated[i]._id %>">Preview</button>
+                        <button type="submit" formmethod="POST" formaction="/delete/<%= user.gamesCreated[i]._id %>?_method=DELETE">Delete</button>
+                    </form>
+                    <br>
+                </div>
+            </div>
+        <% } %>
     <% } %>
     <h3>Games Played:</h3>
     <% if (user.gamesPlayed.length) { %>

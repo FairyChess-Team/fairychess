@@ -2,7 +2,7 @@ const userModel = require('../models/user');
 const gameModel = require('../models/game');
 const mongoose = require('mongoose');
 
-exports.index = (req, res) =>
+exports.index = (req, res, next) =>
 {
     userModel.findById(req.session.user)
     .then(user =>
@@ -12,7 +12,7 @@ exports.index = (req, res) =>
     .catch(err => next(err))
 };
 
-exports.login = (req, res) =>
+exports.login = (req, res, next) =>
 {
     userModel.findById(req.session.user)
     .then(user =>
@@ -39,17 +39,34 @@ exports.editexisting = (req, res, next) =>
     .then(user =>
     {
         let game = user.gamesCreated.find(game => game._id == id);
-        res.render('./main/editor', {user, game});
+        if (game)
+            res.render('./main/editor', {user, game});
+        else
+        {
+            let err = new Error(`You cannot edit the game with ID "${id}" as it does not exist on your account`);
+            err.status = 400;
+            next(err);
+        }
+
     })
     .catch(err => next(err))
 }
 
-exports.player = (req, res) =>
+exports.previewgame = (req, res, next) =>
 {
+    let id = req.params.id;
     userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/player');
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/previewer', {game});
+        else
+        {
+            let err = new Error(`You cannot preview the game with ID "${id}" as it does not exist on your account`);
+            err.status = 400;
+            next(err);
+        }
     })
     .catch(err => next(err))
 }
@@ -184,7 +201,6 @@ exports.saveexistinggame = (req, res, next) =>
         return next(error);
     }
     let user = req.session.user;
-    console.log(user);
     userModel.findOneAndUpdate(
         {
             _id: user,
@@ -201,7 +217,6 @@ exports.saveexistinggame = (req, res, next) =>
     )
     .then(result =>
     {
-        console.log("a result that is ", result);
         res.redirect('/profile');
     })
     .catch(err => next(err))
@@ -231,3 +246,16 @@ exports.delete = (req, res, next) =>
     })
     .catch(err => next(err));
 }
+
+exports.generatethumbnail = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/thumbnail', {game});
+    })
+    .catch(err => next(err))
+} 

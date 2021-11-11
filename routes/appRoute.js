@@ -18,7 +18,7 @@ router.post('/login', authentication.currentlyGuest, controller.authenticate)
 
 router.get('/new', authentication.currentlyGuest, controller.newuser);
 
-router.get('/player', authentication.loggedIn, controller.player);
+router.get('/preview/:id', authentication.loggedIn, controller.previewgame);
 
 router.get('/logout', authentication.loggedIn, controller.logout);
 
@@ -29,5 +29,7 @@ router.post('/save', authentication.loggedIn, controller.savegame);
 router.put('/save/:id', authentication.loggedIn, controller.saveexistinggame)
 
 router.delete('/delete/:id', authentication.loggedIn, controller.delete);
+
+router.get('/thumbnail/:id', controller.generatethumbnail);
 
 module.exports = router;

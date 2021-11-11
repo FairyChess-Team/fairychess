@@ -37,8 +37,10 @@ var Chess = function (fen) {
   var ROOK = 'r'
   var QUEEN = 'q'
   var KING = 'k'
+  var LANCER = 'l'
+  var DRAGON = 'd'
 
-  var SYMBOLS = 'pnbrqkPNBRQK'
+  var SYMBOLS = 'pnbrqkPNBRQKdDlL'
 
   var DEFAULT_POSITION =
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
@@ -56,7 +58,15 @@ var Chess = function (fen) {
     r: [-16, 1, 16, -1],
     q: [-17, -16, -15, 1, 17, 16, 15, -1],
     k: [-17, -16, -15, 1, 17, 16, 15, -1],
+    l: [-16],
+    d: [[-17,1], -16, [-15,1], 1, [17, 1], 16, [15, 1], -1] //second element in each offset element (for ones that are arrays) is how many moves
   }
+
+
+  var BLACK_PIECE_OFFSETS = {
+    l: [16]
+  }
+
 
   // prettier-ignore
   var ATTACKS = [
@@ -336,7 +346,7 @@ var Chess = function (fen) {
           sum_fields += parseInt(rows[i][k], 10)
           previous_was_number = true
         } else {
-          if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
+          if (!/^[pnbrqkPNBRQKdDlL]$/.test(rows[i][k])) {
             return { valid: false, error_number: 9, error: errors[9] }
           }
           sum_fields += 1
@@ -462,13 +472,14 @@ var Chess = function (fen) {
 
     var sq = SQUARES[square]
 
-    /* don't let the user place more than one king */
+    /* Bypass the no double king piece move */
+    /*
     if (
       piece.type == KING &&
       !(kings[piece.color] == EMPTY || kings[piece.color] == sq)
     ) {
       return false
-    }
+    } */
 
     board[sq] = { type: piece.type, color: piece.color }
     if (piece.type === KING) {
@@ -521,12 +532,50 @@ var Chess = function (fen) {
         board[from].type === PAWN &&
         (rank(to) === RANK_8 || rank(to) === RANK_1)
       ) {
-        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT]
+        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, DRAGON, LANCER]
         for (var i = 0, len = pieces.length; i < len; i++) {
           moves.push(build_move(board, from, to, flags, pieces[i]))
         }
       } else {
         moves.push(build_move(board, from, to, flags))
+      }
+    }
+
+    function generate_unlimited_moves(square, offset, board, moves, i, BITS, piece) {
+      while (true) {
+        // if (piece.type == 'l' && piece.color == 'b') {
+        //   offset = 16
+        // }
+        // else if (piece.type == 'l' && piece.color == 'w'){
+        //   offset = -16
+        // }
+        square += offset
+        if (square & 0x88) break
+        if (board[square] == null) {
+          add_move(board, moves, i, square, BITS.NORMAL)
+        } else {
+          if (board[square].color === us) break
+          add_move(board, moves, i, square, BITS.CAPTURE)
+          break
+        }
+
+        /* break, if knight or king */
+        if (piece.type === 'n' || piece.type === 'k') break
+      }
+    }
+
+    function generate_move_by_size(square, offset, board, moves, i, BITS, piece, numMoves) {
+      for(k = 0; k < numMoves; k++) {
+        square += offset
+        if (square & 0x88) break
+
+        if (board[square] == null) {
+          add_move(board, moves, i, square, BITS.NORMAL)
+        } else {
+          if (board[square].color === us) break
+          add_move(board, moves, i, square, BITS.CAPTURE)
+          break //milanreallychange
+        }
       }
     }
 
@@ -600,24 +649,30 @@ var Chess = function (fen) {
           }
         }
       } else if (piece_type === true || piece_type === piece.type) {
-        for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
-          var offset = PIECE_OFFSETS[piece.type][j]
+        console.log(piece)
+        let piece_offset_array = PIECE_OFFSETS[piece.type]
+        /*
+        If a piece has offsets (directions) that are different when black, then set piece_offset_array to those
+        respective directions
+         */
+        if (piece.type in BLACK_PIECE_OFFSETS && piece.color === 'b') {
+          piece_offset_array = BLACK_PIECE_OFFSETS[piece.type]
+        }
+        for (var j = 0, len = piece_offset_array.length; j < len; j++) {
+          var offset_amount = piece_offset_array[j]
           var square = i
-
-          while (true) {
-            square += offset
-            if (square & 0x88) break
-
-            if (board[square] == null) {
-              add_move(board, moves, i, square, BITS.NORMAL)
-            } else {
-              if (board[square].color === us) break
-              add_move(board, moves, i, square, BITS.CAPTURE)
-              break
-            }
-
-            /* break, if knight or king */
-            if (piece.type === 'n' || piece.type === 'k') break
+          /*
+          Check if there is an array that exists with a PIECE_OFFSETS element
+          If such an array exists, use the first element for offset and second element for how many spaces
+          a piece can move
+          */
+          if (offset_amount.constructor === Array) { //if offset is an array, this means that allowed moves are limited in jth direction
+            let numMoves = offset_amount[1]
+            let offset_amount_for_limit = offset_amount[0]
+            generate_move_by_size(square, offset_amount_for_limit, board, moves, i, BITS, piece, numMoves)
+          }
+          else {
+            generate_unlimited_moves(square, offset_amount, board, moves, i, BITS, piece)
           }
         }
       }
@@ -1144,7 +1199,7 @@ var Chess = function (fen) {
     // this should parse invalid SAN like: Pe2-e4, Rc1c4, Qf3xf7
     if (sloppy) {
       var matches = clean_move.match(
-        /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
+        /([pnbrqkPNBRQKdDlL])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
       )
       if (matches) {
         var piece = matches[1]
@@ -1291,6 +1346,8 @@ var Chess = function (fen) {
     ROOK: ROOK,
     QUEEN: QUEEN,
     KING: KING,
+    DRAGON: DRAGON,
+    LANCER: LANCER,
     SQUARES: (function () {
       /* from the ECMA-262 spec (section 12.6.4):
        * "The mechanics of enumerating the properties ... is

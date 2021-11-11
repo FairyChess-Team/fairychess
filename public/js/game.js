@@ -1,5 +1,7 @@
+let FEN = document.getElementById('FENstring').value + " w - - 0 1";
+
 var board,
-    game = new Chess();
+    game = new Chess(FEN);
 
 var removeGreySquares = function () {
     $('#board .square-55d63').css('background', '');
@@ -69,7 +71,7 @@ var onSnapEnd = function () {
 
 var cfg = {
     draggable: true,
-    position: 'start',
+    position: FEN,
     onDragStart: onDragStart,
     onDrop: onDrop,
     onMouseoutSquare: onMouseoutSquare,
