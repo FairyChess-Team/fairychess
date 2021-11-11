@@ -9,13 +9,14 @@
             <% } %>
             <div class='sideAdjust'>
                 <div class='itemAdjust'>
-                    <a href='/editor/<%= user.gamesCreated[i]._id %>'><p><%= user.gamesCreated[i].title %></p></a>
+                    <p><%= user.gamesCreated[i].title %></p>
                     <div class='thumbnail'>
                         <iframe frameBorder='0' src='/thumbnail/<%= user.gamesCreated[i]._id %>'></iframe>
                     </div>
                     <form>
-                        <button type="submit" formmethod="POST" formaction="/delete/<%= user.gamesCreated[i]._id %>?_method=DELETE">Delete</button>
+                        <button formmethod="GET" formaction="/editor/<%= user.gamesCreated[i]._id %>">Edit</button>
                         <button formmethod="GET" formaction="/preview/<%= user.gamesCreated[i]._id %>">Preview</button>
+                        <button type="submit" formmethod="POST" formaction="/delete/<%= user.gamesCreated[i]._id %>?_method=DELETE">Delete</button>
                     </form>
                     <br>
                 </div>
