@@ -39,3 +39,13 @@ nav h2
     width: 275px;
     height: 275px;
 }
+
+.sideAdjust
+{
+    display: inline-flex;
+}
+
+.itemAdjust
+{
+    flex: 1;
+}
