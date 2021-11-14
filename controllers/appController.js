@@ -33,9 +33,8 @@ exports.editexisting = (req, res, next) =>
             res.render('./main/editor', {user, game});
         else
         {
-            let err = new Error(`You cannot edit the game with ID "${id}" as it does not exist on your account`);
-            err.status = 400;
-            next(err);
+            req.flash('error', 'You cannot modify this game as it does not exist on your account');
+            res.redirect('/profile');
         }
 
     })
@@ -53,9 +52,8 @@ exports.previewgame = (req, res, next) =>
             res.render('./main/previewer', {game});
         else
         {
-            let err = new Error(`You cannot preview the game with ID "${id}" as it does not exist on your account`);
-            err.status = 400;
-            next(err);
+            req.flash('error', 'You cannot preview this game as it does not exist on your account');
+            res.redirect('/profile')
         }
     })
     .catch(err => next(err))
@@ -80,9 +78,8 @@ exports.adduser = (req, res, next) =>
     {
         if (err.code === 11000)
         {
-            err = new Error("Username has already been used");
-            err.status = 400;
-            return next(err);
+            req.flash('error', 'This email address has already been used');
+            return res.redirect('back');
         }
         next(err);
     });
@@ -109,12 +106,14 @@ exports.authenticate = (req, res, next) =>
                 }
                 else
                 {
+                    req.flash('error', 'Incorrect password provided');
                     res.redirect('/login');
                 }
             });
         }
         else
         {
+            req.flash('error', 'Incorrect email address provided');
             res.redirect('/login');
         }
     })
@@ -149,6 +148,11 @@ exports.profile = (req, res, next) =>
 
 exports.savegame = (req, res, next) =>
 {
+    if (req.body.chessPositions === "")
+    {
+        req.flash('error', 'Enter in some chess positions to continue');
+        return res.redirect('back');
+    }
     let game = gameModel(req.body);
     game.rating = 0;
     game.p1CapturedPieces = new Array();
@@ -157,6 +161,7 @@ exports.savegame = (req, res, next) =>
     .then(result =>
     {
         let user = req.session.user;
+        req.session.editorPieces = req.body.chessPositions;
         userModel.updateOne(
             {
                 _id: user
@@ -170,6 +175,7 @@ exports.savegame = (req, res, next) =>
         )
         .then(user =>
         {
+            req.flash('success', 'Chess game created successfully');
             res.redirect('/profile');
         })
         .catch(err => next(err));
@@ -180,13 +186,13 @@ exports.savegame = (req, res, next) =>
 exports.saveexistinggame = (req, res, next) =>
 {
     let gameId = req.params.id;
-    if (!req.body.chessPositions)
+    if (req.body.chessPositions === "")
     {
-        let error = new Error("Please enter in some chess positions to continue");
-        error.status = 400;
-        return next(error);
+        req.flash('error', 'Enter in some chess positions to continue');
+        return res.redirect('back');
     }
     let user = req.session.user;
+    req.session.editorPieces = req.body.chessPositions;
     userModel.findOneAndUpdate(
         {
             _id: user,
@@ -203,6 +209,7 @@ exports.saveexistinggame = (req, res, next) =>
     )
     .then(result =>
     {
+        req.flash('success', 'Chess game updated successfully');
         res.redirect('/profile');
     })
     .catch(err => next(err))
@@ -214,20 +221,21 @@ exports.delete = (req, res, next) =>
     let user = req.session.user;
 
     userModel.updateOne(
-        {
-            _id: user
-        },
+    {
+        _id: user
+    },
+    { 
+        $pull: 
         { 
-            $pull: 
-            { 
-                gamesCreated: 
-                {
-                    _id: mongoose.Types.ObjectId(gameId)
-                }
+            gamesCreated: 
+            {
+                _id: mongoose.Types.ObjectId(gameId)
+            }
         }
     })
     .then(user =>
     {
+        req.flash('success', 'Chess game deleted successfully');
         res.redirect('/profile');
     })
     .catch(err => next(err));
@@ -244,4 +252,4 @@ exports.generatethumbnail = (req, res, next) =>
             res.render('./main/thumbnail', {game});
     })
     .catch(err => next(err))
-} 
+}
