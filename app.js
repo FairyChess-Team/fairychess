@@ -43,6 +43,7 @@ app.use(flash());
 app.use((req, res, next) =>
 {
     res.locals.user = req.session.user || null;
+    res.locals.editorPieces = req.session.editorPieces || null;
     res.locals.errors = req.flash('error');
     res.locals.successes = req.flash('success');
     next();
