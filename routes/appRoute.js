@@ -24,6 +24,8 @@ router.get('/logout', authentication.loggedIn, controller.logout);
 
 router.get('/profile', authentication.loggedIn, controller.profile);
 
+router.post('/search', authentication.loggedIn, controller.searchgames);
+
 router.post('/save', authentication.loggedIn, controller.savegame);
 
 router.put('/save/:id', authentication.loggedIn, controller.saveexistinggame)
