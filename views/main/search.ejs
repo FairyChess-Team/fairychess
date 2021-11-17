@@ -1,0 +1,31 @@
+<%- include('../partials/header.ejs') %>
+<br><br>
+<form>
+    <button formmethod="GET" formaction="/profile">Back To Profile</button>
+</form>
+<% if (games) { %>
+    <% if (games.length) { %>
+        <h3>Games matching the search term:</h3>
+        <% for (var i = 0; i < games.length; i++) { %>
+            <% if (i % 6 == 0 && i != 0) { %>
+                <br><br>
+            <% } %>
+            <div class='sideAdjust'>
+                <div class='itemAdjust'>
+                    <p><%= games[i].title %></p>
+                    <div class='thumbnail'>
+                        <iframe frameBorder='0' src='/thumbnail/<%= games[i]._id %>'></iframe>
+                    </div>
+                    <form>
+                        <button formmethod="GET" formaction="/editor/<%= games[i]._id %>">Edit</button>
+                        <button formmethod="GET" formaction="/preview/<%= games[i]._id %>">Preview</button>
+                        <button type="submit" formmethod="POST" formaction="/delete/<%= games[i]._id %>?_method=DELETE">Delete</button>
+                    </form>
+                    <br>
+                </div>
+            </div>
+        <% } %>
+    <% } %>
+<% } else { %>
+    <h3>There are no games that match this search term</h3>
+<% } %>
