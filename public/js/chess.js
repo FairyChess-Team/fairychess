@@ -39,8 +39,10 @@ var Chess = function (fen) {
   var KING = 'k'
   var LANCER = 'l'
   var DRAGON = 'd'
+  var TOKIN = 't'
+  var HORSE = 'h'
 
-  var SYMBOLS = 'pnbrqkPNBRQKdDlL'
+  var SYMBOLS = 'pnbrqkPNBRQKDdlLtThH'
 
   var DEFAULT_POSITION =
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
@@ -59,7 +61,9 @@ var Chess = function (fen) {
     q: [-17, -16, -15, 1, 17, 16, 15, -1],
     k: [-17, -16, -15, 1, 17, 16, 15, -1],
     l: [-16],
-    d: [[-17,1], -16, [-15,1], 1, [17, 1], 16, [15, 1], -1] //second element in each offset element (for ones that are arrays) is how many moves
+    d: [[-17,1], -16, [-15,1], 1, [17, 1], 16, [15, 1], -1], //second element in each offset element (for ones that are arrays) is how many moves
+    h: [[-16,1], -17, [1,1], -15, [16, 1], 17, [-1, 1], 15],
+    t: [[16,1], [17,1],[15,1],[-16,1]]
   }
 
 
@@ -346,7 +350,7 @@ var Chess = function (fen) {
           sum_fields += parseInt(rows[i][k], 10)
           previous_was_number = true
         } else {
-          if (!/^[pnbrqkPNBRQKdDlL]$/.test(rows[i][k])) {
+          if (!/^[pnbrqkPNBRQKdDlLtThH]$/.test(rows[i][k])) {
             return { valid: false, error_number: 9, error: errors[9] }
           }
           sum_fields += 1
@@ -532,7 +536,7 @@ var Chess = function (fen) {
         board[from].type === PAWN &&
         (rank(to) === RANK_8 || rank(to) === RANK_1)
       ) {
-        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, DRAGON, LANCER]
+        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, DRAGON, LANCER, HORSE, TOKIN]
         for (var i = 0, len = pieces.length; i < len; i++) {
           moves.push(build_move(board, from, to, flags, pieces[i]))
         }
@@ -1199,7 +1203,7 @@ var Chess = function (fen) {
     // this should parse invalid SAN like: Pe2-e4, Rc1c4, Qf3xf7
     if (sloppy) {
       var matches = clean_move.match(
-        /([pnbrqkPNBRQKdDlL])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
+        /([pnbrqkPNBRQKDdlLTtHh])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
       )
       if (matches) {
         var piece = matches[1]
@@ -1348,6 +1352,8 @@ var Chess = function (fen) {
     KING: KING,
     DRAGON: DRAGON,
     LANCER: LANCER,
+    TOKIN: TOKIN,
+    HORSE: HORSE, 
     SQUARES: (function () {
       /* from the ECMA-262 spec (section 12.6.4):
        * "The mechanics of enumerating the properties ... is
