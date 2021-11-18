@@ -7,7 +7,7 @@ const userSchema = new Schema(
     firstName: {type: String, required: [true, 'cannot be empty']},
     lastName: {type: String, required: [true, 'cannot be empty']},
     username: {type: String, required: [true, 'cannot be empty'], unique: true},
-    password: {type: String, required: [true, 'cannot be empty']},
+    password: {type: String, required: [true, 'cannot be empty'], maxlength: 64},
     gamesCreated: {type: Array},
     gamesPlayed: {type: Array},
 });
