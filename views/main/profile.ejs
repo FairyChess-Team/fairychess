@@ -9,24 +9,29 @@
             <button>Search</button>
         </form>
         <h3>Games Created:</h3>
-        <% for (var i = 0; i < user.gamesCreated.length; i++) { %>
-            <% if (i % 6 == 0 && i != 0) { %>
-                <br><br>
-            <% } %>
-            <div class='sideAdjust'>
-                <div class='itemAdjust'>
-                    <p><%= user.gamesCreated[i].title %></p>
-                    <div class='thumbnail'>
-                        <iframe frameBorder='0' src='/thumbnail/<%= user.gamesCreated[i]._id %>'></iframe>
+        <% if (user.gamesCreated.length > 0) { %>
+            <% for (var i = 0; i < user.gamesCreated.length; i++) { %>
+                <% if (i % 6 == 0 && i != 0) { %>
+                    <br><br>
+                <% } %>
+                <div class='sideAdjust'>
+                    <div class='itemAdjust'>
+                        <p><%= user.gamesCreated[i].title %></p>
+                        <div class='thumbnail'>
+                            <iframe frameBorder='0' src='/thumbnail/<%= user.gamesCreated[i]._id %>'></iframe>
+                        </div>
+                        <form>
+                            <button formmethod="GET" formaction="/editor/<%= user.gamesCreated[i]._id %>">Edit</button>
+                            <button formmethod="GET" formaction="/preview/<%= user.gamesCreated[i]._id %>">Preview</button>
+                            <button formmethod="GET" formaction="/play/<%= user.gamesCreated[i]._id %>">Play</button>
+                            <button type="submit" formmethod="POST" formaction="/delete/<%= user.gamesCreated[i]._id %>?_method=DELETE">Delete</button>
+                        </form>
+                        <br>
                     </div>
-                    <form>
-                        <button formmethod="GET" formaction="/editor/<%= user.gamesCreated[i]._id %>">Edit</button>
-                        <button formmethod="GET" formaction="/preview/<%= user.gamesCreated[i]._id %>">Preview</button>
-                        <button type="submit" formmethod="POST" formaction="/delete/<%= user.gamesCreated[i]._id %>?_method=DELETE">Delete</button>
-                    </form>
-                    <br>
                 </div>
-            </div>
+            <% } %>
+        <% } else { %>
+            <h3>You do not have any games to display here. Go into the "Editor" tab to start making games</h3>
         <% } %>
     <% } %>
     <h3>Games Played:</h3>

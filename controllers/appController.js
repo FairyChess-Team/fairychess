@@ -128,6 +128,24 @@ exports.editor = (req, res, next) =>
     .catch(err => next(err))
 }
 
+exports.player = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/player', {user, game});
+        else
+        {
+            req.flash('error', 'You cannot play this game as it does not exist on your account');
+            res.redirect('/profile');
+        }
+    })
+    .catch(err => next(err));
+}
+
 exports.editexisting = (req, res, next) =>
 {
     let id = req.params.id;
@@ -142,7 +160,6 @@ exports.editexisting = (req, res, next) =>
             req.flash('error', 'You cannot modify this game as it does not exist on your account');
             res.redirect('/profile');
         }
-
     })
     .catch(err => next(err))
 }
@@ -257,6 +274,22 @@ exports.saveexistinggame = (req, res, next) =>
         res.redirect('/profile');
     })
     .catch(err => next(err))
+}
+
+exports.saveplayedcomputergame = (req, res, next) =>
+{
+    userModel.findOneAndUpdate(
+    {
+        _id: user
+    },
+    {
+        
+    })
+    .then(user =>
+    {
+
+    })
+    .catch(err =>next(err));
 }
 
 exports.generatethumbnail = (req, res, next) =>

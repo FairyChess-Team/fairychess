@@ -13,6 +13,10 @@ router.get('/editor', loggedIn, controller.editor);
 
 router.get('/editor/:id', loggedIn, controller.editexisting);
 
+router.post('/editor', loggedIn, validateChessGame, validateResults, controller.savegame);
+
+router.put('/editor/:id', loggedIn, validateChessGame, validateResults, controller.saveexistinggame)
+
 router.get('/login', currentlyGuest, controller.login);
 
 router.post('/login', currentlyGuest, validateLogin, validateResults, controller.authenticate)
@@ -27,12 +31,10 @@ router.get('/profile', loggedIn, controller.profile);
 
 router.post('/search', loggedIn, validateSearch, controller.searchgames);
 
-router.post('/save', loggedIn, validateChessGame, validateResults, controller.savegame);
-
-router.put('/save/:id', loggedIn, validateChessGame, validateResults, controller.saveexistinggame)
-
 router.delete('/delete/:id', loggedIn, controller.delete);
 
 router.get('/thumbnail/:id', loggedIn, controller.generatethumbnail);
+
+router.get('/play/:id', loggedIn, controller.player);
 
 module.exports = router;

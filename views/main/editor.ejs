@@ -8,9 +8,9 @@
         </div>
         <div class="float-child-right">
             <% if (!game) { %>
-                <form action='/save' method="POST">
+                <form action='/editor' method="POST">
             <% } else { %>
-                <form action='/save/<%= game._id %>?_method=PUT' method="POST">
+                <form action='/editor/<%= game._id %>?_method=PUT' method="POST">
             <% } %>
             <label for='title'>Title: </label><br>
             <% if (game) { %>
