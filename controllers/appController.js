@@ -218,7 +218,7 @@ exports.savegame = (req, res, next) =>
                 }
             }
         )
-        .then(user =>
+        .then(result =>
         {
             req.flash('success', 'Chess game created successfully');
             res.redirect('/profile');
@@ -239,19 +239,18 @@ exports.saveexistinggame = (req, res, next) =>
     let user = req.session.user;
     req.session.editorPieces = req.body.chessPositions;
     userModel.findOneAndUpdate(
-        {
+    {
             _id: user,
             'gamesCreated._id': mongoose.Types.ObjectId(gameId)
-        },
+    },
+    {
+        $set:
         {
-            $set:
-            {
-                'gamesCreated.$.chessPositions': req.body.chessPositions,
-                'gamesCreated.$.title': req.body.title,
-                'gamesCreated.$.creator': req.body.creator,
-            }
+            'gamesCreated.$.chessPositions': req.body.chessPositions,
+            'gamesCreated.$.title': req.body.title,
+            'gamesCreated.$.creator': req.body.creator,
         }
-    )
+    })
     .then(result =>
     {
         req.flash('success', 'Chess game updated successfully');
