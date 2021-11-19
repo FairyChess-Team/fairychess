@@ -35,12 +35,24 @@
         <% } %>
     <% } %>
     <h3>Games Played:</h3>
-    <% if (user.gamesPlayed.length) { %>
-        <% user.gamesPlayed.forEach(game => { %>
-            <a href='/games/<%= game._id %>'><p><%= game.title %></p></a>
-        <% }); %>
+    <% if (user.gamesPlayed.length > 0) { %>
+        <% for (var i = 0; i < user.gamesPlayed.length; i++) { %>
+            <% if (i % 6 == 0 && i != 0) { %>
+                <br><br>
+            <% } %>
+            <div class='sideAdjust'>
+                <div class='itemAdjust'>
+                    <p><%= user.gamesPlayed[i].title %></p>
+                    <form>
+                        <button formmethod="GET" formaction="/previewplay/<%= user.gamesPlayed[i]._id %>">View</button>
+                        <button type="submit" formmethod="POST" formaction="/deleteplay/<%= user.gamesPlayed[i]._id %>?_method=DELETE">Delete</button>
+                    </form>
+                    <br>
+                </div>
+            </div>
+        <% } %>
     <% } else { %>
-        <h3>Function is still in development, check back later</h3>
+        <h3>You do not have any games that you played. Go to the "Play" button on any game you create to play against a computer</h3>
     <% } %>
 <% } else { %>
     <h3>Please log into your account to use this section of the application</h3>

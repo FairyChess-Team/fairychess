@@ -1,7 +1,7 @@
 const express = require('express');
 const controller = require('../controllers/appController');
 const {currentlyGuest, loggedIn} = require('../middlewares/authentication');
-const {validateChessGame, validateLogin, validateRegistration, validateResults, validateSearch} = require('../middlewares/validation');
+const {validateEditedChessGame, validateLogin, validatePlayedChessGame, validateRegistration, validateResults, validateSearch} = require('../middlewares/validation');
 
 const router = express.Router();
 
@@ -13,9 +13,9 @@ router.get('/editor', loggedIn, controller.editor);
 
 router.get('/editor/:id', loggedIn, controller.editexisting);
 
-router.post('/editor', loggedIn, validateChessGame, validateResults, controller.savegame);
+router.post('/editor', loggedIn, validateEditedChessGame, validateResults, controller.savegame);
 
-router.put('/editor/:id', loggedIn, validateChessGame, validateResults, controller.saveexistinggame)
+router.put('/editor/:id', loggedIn, validateEditedChessGame, validateResults, controller.saveexistinggame)
 
 router.get('/login', currentlyGuest, controller.login);
 
@@ -36,5 +36,11 @@ router.delete('/delete/:id', loggedIn, controller.delete);
 router.get('/thumbnail/:id', loggedIn, controller.generatethumbnail);
 
 router.get('/play/:id', loggedIn, controller.player);
+
+router.post('/play', loggedIn, validatePlayedChessGame, controller.saveplayedgame)
+
+router.get('/previewplay/:id', loggedIn, controller.previewplayedgame);
+
+router.delete('/deleteplay/:id', loggedIn, controller.deleteplayedgame);
 
 module.exports = router;

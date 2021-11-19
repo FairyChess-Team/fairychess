@@ -1,0 +1,39 @@
+<%- include('../partials/header.ejs')%>
+<h2 style="text-align: center;">Chess Game</h2>
+<h2 style="text-align: center;">Game ID: (<%= game._id %>)</h2>
+<h2 style="text-align: center;">Enemy: Computer</h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<div class="container">>
+    <form>
+        <input type="hidden" id="FENstring" name="FENstring" value="<%= game.chessPositions %>">
+    </form>
+    <div id="board" style="width: 500px; margin: auto">
+    </div>
+</div>
+<script src="/js/thumbnail.js"></script>
+<h3>Player 1 (White) Captured Pieces:</h3>
+<% if (game.p1CapturedPieces.length > 0) { %>
+    <div id="player1pieces">
+        <% game.p1CapturedPieces.forEach(piece => { %>
+            <% if (piece !== "") { %>
+                <img src="/images/<%= piece %>.png">
+            <% } %>
+        <% }); %>
+    </div>
+<% } else { %>
+    <h3>Player 1 did not capture any pieces</h3>
+<% } %>
+<h3>Player 2 (Black) Captured Pieces:</h3>
+<% if (game.p2CapturedPieces.length > 0) { %>
+    <div id="player2pieces">
+        <% game.p2CapturedPieces.forEach(piece => { %>
+            <% if (piece !== "") { %>
+                <img src="/images/<%= piece %>.png">
+            <% } %>
+        <% }); %>
+    </div>
+<% } else { %>
+    <h3>Player 2 did not capture any pieces</h3>
+<% } %>
+</body>
+</html>

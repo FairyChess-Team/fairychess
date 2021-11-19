@@ -1,4 +1,4 @@
-let FEN = document.getElementById('FENstring').value + " w - - 0 1";
+let FEN = document.getElementById('chessPositions').value + " w - - 0 1";
 
 var board, game = new Chess(FEN)
 
@@ -23,19 +23,26 @@ function onDragStart(source, piece, position, orientation) {
 
 function makeRandomMove() {
   var possibleMoves = game.moves();
-  if (possibleMoves.length === 0) return;
-
   var randomIdx = Math.floor(Math.random() * possibleMoves.length);
   var move = game.move(possibleMoves[randomIdx]);
   if (move['captured'])
   {
+    let piece = `w${move['captured'].toUpperCase()}`;
     let child = document.createElement('img');
-    child.setAttribute("src", `/images/w${move['captured'].toUpperCase()}.png`);
-    document.getElementById("player2pieces").appendChild(
-        child
-    );
+    document.getElementById("player2captures").value += `/${piece}`;
+    child.setAttribute("src", `/images/${piece}.png`);
+    document.getElementById("player2pieces").appendChild(child);
   }
   board.position(game.fen());
+  if (game.game_over())
+  {
+    let button = document.getElementById("finishGame");
+    if (button)
+    {
+      document.getElementById('chessPositions').value = game.fen();
+      button.click();
+    }
+  }
 }
 
 function onDrop(source, target) {
@@ -48,13 +55,25 @@ function onDrop(source, target) {
   if (move === null) return 'snapback';
   if (move['captured'])
   {
+    let piece = `b${move['captured'].toUpperCase()}`;
     let child = document.createElement('img');
-    child.setAttribute("src", `/images/b${move['captured'].toUpperCase()}.png`);
+    document.getElementById("player1captures").value += `/${piece}`;
+    child.setAttribute("src", `/images/${piece}.png`);
     document.getElementById("player1pieces").appendChild(
         child
     );
   }
-  window.setTimeout(makeRandomMove, 250);
+  if (game.game_over())
+  {
+    let button = document.getElementById("finishGame");
+    if (button)
+    {
+      document.getElementById('chessPositions').value = game.fen();
+      button.click();
+    }
+  }
+  else
+    window.setTimeout(makeRandomMove, 250);
 }
 
 function onMouseoverSquare(square, piece) {
@@ -65,6 +84,7 @@ function onMouseoverSquare(square, piece) {
 
     if (moves.length === 0) return;
 
+    removeGreySquares();
     greySquare(square);
     for (var i = 0; i < moves.length; i++) {
         greySquare(moves[i].to);

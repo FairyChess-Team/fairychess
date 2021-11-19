@@ -14,11 +14,20 @@ exports.validateLogin =
     body('password', 'Password cannot be empty and can be only at most 64 characters').notEmpty().trim().escape().isLength({max: 64})
 ];
 
-exports.validateChessGame =
+exports.validateEditedChessGame =
 [
     body('title', 'Title cannot be empty').notEmpty().trim().escape(),
     body('creator', 'Creator cannot be empty').notEmpty().trim().escape(),
     body('chessPositions', 'Chess positions cannot be empty').notEmpty().trim()
+];
+
+exports.validatePlayedChessGame =
+[
+    body('title', 'Title cannot be empty').notEmpty().trim().escape(),
+    body('creator', 'Creator cannot be empty').notEmpty().trim().escape(),
+    body('chessPositions', 'Chess positions cannot be empty').notEmpty().trim(),
+    body('player1captures', 'Player 1 captured pieces cannot be empty').notEmpty().trim(),
+    body('player2captures', 'Player 2 captured pieces cannot be empty').notEmpty().trim(),
 ];
 
 exports.validateSearch = 

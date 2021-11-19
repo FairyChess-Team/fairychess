@@ -208,6 +208,24 @@ exports.previewgame = (req, res, next) =>
     .catch(err => next(err))
 }
 
+exports.previewplayedgame = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesPlayed.find(game => game._id == id);
+        if (game)
+            res.render('./main/gamehistory', {game});
+        else
+        {
+            req.flash('error', 'You cannot preview this game as it does not exist on your account');
+            res.redirect('/profile')
+        }
+    })
+    .catch(err => next(err))
+}
+
 exports.savegame = (req, res, next) =>
 {
     if (req.body.chessPositions === "")
@@ -276,20 +294,56 @@ exports.saveexistinggame = (req, res, next) =>
     .catch(err => next(err))
 }
 
-exports.saveplayedcomputergame = (req, res, next) =>
+exports.saveplayedgame = (req, res, next) =>
 {
-    userModel.findOneAndUpdate(
+    let game = new gameModel(req.body);
+    let user = req.session.user;
+    game.rating = 0;
+    game.p1CapturedPieces = req.body.player1captures.split('/');
+    game.p2capturedPieces = req.body.player2captures.split('/');
+    userModel.updateOne(
+    {
+        _id: user
+    }, 
+    { 
+        $push: 
+        { 
+            gamesPlayed: game 
+        }
+    }
+    )
+    .then(result =>
+    {
+        req.flash('success', 'Chess game has been finished');
+        res.redirect('/profile');
+    })
+    .catch(err => next(err));
+}
+
+exports.deleteplayedgame = (req, res, next) =>
+{
+    let gameId = req.params.id;
+    let user = req.session.user;
+
+    userModel.updateOne(
     {
         _id: user
     },
-    {
-        
+    { 
+        $pull: 
+        { 
+            gamesPlayed: 
+            {
+                _id: mongoose.Types.ObjectId(gameId)
+            }
+        }
     })
     .then(user =>
     {
-
+        req.flash('success', 'Played chess game deleted successfully');
+        res.redirect('/profile');
     })
-    .catch(err =>next(err));
+    .catch(err => next(err));
 }
 
 exports.generatethumbnail = (req, res, next) =>
