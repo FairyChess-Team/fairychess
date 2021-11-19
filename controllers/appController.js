@@ -300,7 +300,7 @@ exports.saveplayedgame = (req, res, next) =>
     let user = req.session.user;
     game.rating = 0;
     game.p1CapturedPieces = req.body.player1captures.split('/');
-    game.p2capturedPieces = req.body.player2captures.split('/');
+    game.p2CapturedPieces = req.body.player2captures.split('/');
     userModel.updateOne(
     {
         _id: user
