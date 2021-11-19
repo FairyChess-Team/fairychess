@@ -1,0 +1,25 @@
+<%- include('../partials/header.ejs')%>
+<h2 style="text-align: center;">Chess Game Player</h2>
+<h2 style="text-align: center;">Game ID: (<%= game._id %>)</h2>
+<h2 style="text-align: center;">Enemy: Computer</h2>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<div class="container">
+    <!-- The chess board -->
+    <form action="/play" method="POST">
+        <input type="hidden" id="chessPositions" name="chessPositions" value="<%= game.chessPositions %>">
+        <input type="hidden" id="title" name="title" value="<%= game.title %>">
+        <input type="hidden" id="creator" name="creator" value="<%= game.creator %>">
+        <input type="hidden" id="player1captures" name="player1captures" value="">
+        <input type="hidden" id="player2captures" name="player2captures" value="">
+        <button style="display: none" id="finishGame"></button>
+    </form>
+    <div id="board" style="width: 500px; margin: auto">
+    </div>
+</div>
+<script src="/js/player.js"></script>
+<h3>Player 1 (White) Captured Pieces:</h3>
+<div id="player1pieces"></div>
+<h3>Player 2 (Black) Captured Pieces:</h3>
+<div id="player2pieces"></div>
+</body>
+</html>

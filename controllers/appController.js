@@ -128,6 +128,24 @@ exports.editor = (req, res, next) =>
     .catch(err => next(err))
 }
 
+exports.player = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/player', {user, game});
+        else
+        {
+            req.flash('error', 'You cannot play this game as it does not exist on your account');
+            res.redirect('/profile');
+        }
+    })
+    .catch(err => next(err));
+}
+
 exports.editexisting = (req, res, next) =>
 {
     let id = req.params.id;
@@ -142,7 +160,6 @@ exports.editexisting = (req, res, next) =>
             req.flash('error', 'You cannot modify this game as it does not exist on your account');
             res.redirect('/profile');
         }
-
     })
     .catch(err => next(err))
 }
@@ -182,6 +199,24 @@ exports.previewgame = (req, res, next) =>
         let game = user.gamesCreated.find(game => game._id == id);
         if (game)
             res.render('./main/previewer', {game});
+        else
+        {
+            req.flash('error', 'You cannot preview this game as it does not exist on your account');
+            res.redirect('/profile')
+        }
+    })
+    .catch(err => next(err))
+}
+
+exports.previewplayedgame = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesPlayed.find(game => game._id == id);
+        if (game)
+            res.render('./main/gamehistory', {game});
         else
         {
             req.flash('error', 'You cannot preview this game as it does not exist on your account');
@@ -257,6 +292,58 @@ exports.saveexistinggame = (req, res, next) =>
         res.redirect('/profile');
     })
     .catch(err => next(err))
+}
+
+exports.saveplayedgame = (req, res, next) =>
+{
+    let game = new gameModel(req.body);
+    let user = req.session.user;
+    game.rating = 0;
+    game.p1CapturedPieces = req.body.player1captures.split('/');
+    game.p2capturedPieces = req.body.player2captures.split('/');
+    userModel.updateOne(
+    {
+        _id: user
+    }, 
+    { 
+        $push: 
+        { 
+            gamesPlayed: game 
+        }
+    }
+    )
+    .then(result =>
+    {
+        req.flash('success', 'Chess game has been finished');
+        res.redirect('/profile');
+    })
+    .catch(err => next(err));
+}
+
+exports.deleteplayedgame = (req, res, next) =>
+{
+    let gameId = req.params.id;
+    let user = req.session.user;
+
+    userModel.updateOne(
+    {
+        _id: user
+    },
+    { 
+        $pull: 
+        { 
+            gamesPlayed: 
+            {
+                _id: mongoose.Types.ObjectId(gameId)
+            }
+        }
+    })
+    .then(user =>
+    {
+        req.flash('success', 'Played chess game deleted successfully');
+        res.redirect('/profile');
+    })
+    .catch(err => next(err));
 }
 
 exports.generatethumbnail = (req, res, next) =>
