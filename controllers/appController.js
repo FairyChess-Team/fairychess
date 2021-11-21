@@ -235,8 +235,8 @@ exports.savegame = (req, res, next) =>
     }
     let game = gameModel(req.body);
     game.rating = 0;
-    game.p1CapturedPieces = new Array();
-    game.p2CapturedPieces = new Array();
+    game.p1CapturedPieces = "";
+    game.p2CapturedPieces = "";
     game.save()
     .then(result =>
     {
