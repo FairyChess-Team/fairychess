@@ -1,4 +1,6 @@
 let FEN = document.getElementById('chessPositions').value + " w - - 0 1";
+let player1Captures = new Array();
+let player2Captures = new Array();
 
 var board, game = new Chess(FEN)
 
@@ -12,7 +14,6 @@ function greySquare(square) {
     if (squareEl.hasClass('black-3c85d') === true) {
         background = '#696969';
     }
-
     squareEl.css('background', background);
 };
 
@@ -28,10 +29,33 @@ function makeRandomMove() {
   if (move['captured'])
   {
     let piece = `w${move['captured'].toUpperCase()}`;
-    let child = document.createElement('img');
-    document.getElementById("player2captures").value += `/${piece}`;
-    child.setAttribute("src", `/images/${piece}.png`);
-    document.getElementById("player2pieces").appendChild(child);
+    if (!player2Captures[piece])
+    {
+      let sideAdjust = document.createElement('div');
+      sideAdjust.setAttribute('class', 'sideAdjust');
+      let itemAdjust = document.createElement('div');
+      itemAdjust.setAttribute('class', 'itemAdjust');
+      sideAdjust.appendChild(itemAdjust);
+      let container = document.createElement('div');
+      container.setAttribute('id', `chess_${piece}`);
+      let child = document.createElement('img');
+      child.setAttribute("src", `/images/${piece}.png`);
+      let number = document.createElement('label');
+      number.textContent = 1;
+      number.setAttribute('id', piece)
+      container.appendChild(child);
+      container.appendChild(number);
+      document.getElementById("player2captures").value += `/${piece}`;
+      sideAdjust.childNodes[0].appendChild(container);
+      document.getElementById("player2pieces").appendChild(sideAdjust);
+      player2Captures[piece] = 1;
+    }
+    else
+    {
+      player2Captures[piece]++;
+      document.getElementById("player2captures").value += `/${piece}`;
+      document.getElementById(piece).textContent = player2Captures[piece];
+    }
   }
   board.position(game.fen());
   if (game.game_over())
@@ -56,12 +80,33 @@ function onDrop(source, target) {
   if (move['captured'])
   {
     let piece = `b${move['captured'].toUpperCase()}`;
-    let child = document.createElement('img');
-    document.getElementById("player1captures").value += `/${piece}`;
-    child.setAttribute("src", `/images/${piece}.png`);
-    document.getElementById("player1pieces").appendChild(
-        child
-    );
+    if (!player1Captures[piece])
+    {
+      let sideAdjust = document.createElement('div');
+      sideAdjust.setAttribute('class', 'sideAdjust');
+      let itemAdjust = document.createElement('div');
+      itemAdjust.setAttribute('class', 'itemAdjust');
+      sideAdjust.appendChild(itemAdjust);
+      let container = document.createElement('div');
+      container.setAttribute('id', `chess_${piece}`);
+      let child = document.createElement('img');
+      child.setAttribute("src", `/images/${piece}.png`);
+      let number = document.createElement('label');
+      number.textContent = 1;
+      number.setAttribute('id', piece)
+      container.appendChild(child);
+      container.appendChild(number);
+      document.getElementById("player1captures").value += `/${piece}`;
+      sideAdjust.childNodes[0].appendChild(container);
+      document.getElementById("player1pieces").appendChild(sideAdjust);
+      player1Captures[piece] = 1;
+    }
+    else
+    {
+      player1Captures[piece]++;
+      document.getElementById("player1captures").value += `/${piece}`;
+      document.getElementById(piece).textContent = player1Captures[piece];
+    }
   }
   if (game.game_over())
   {

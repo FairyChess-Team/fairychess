@@ -6,34 +6,24 @@
 <div class="container">
     <form>
         <input type="hidden" id="FENstring" name="FENstring" value="<%= game.chessPositions %>">
+        <input type="hidden" id="player1Captures" name="player1Captures" value="<%= game.p1CapturedPieces %>">
+        <input type="hidden" id="player2Captures" name="player2Captures" value="<%= game.p2CapturedPieces %>">
     </form>
     <div id="board" style="width: 500px; margin: auto">
     </div>
 </div>
-<script src="/js/thumbnail.js"></script>
 <h3>Player 1 (White) Captured Pieces:</h3>
 <% if (game.p1CapturedPieces.length > 0) { %>
-    <div id="player1pieces">
-        <% game.p1CapturedPieces.forEach(piece => { %>
-            <% if (piece !== "") { %>
-                <img src="/images/<%= piece %>.png">
-            <% } %>
-        <% }); %>
-    </div>
+    <div id="player1pieces"></div>
 <% } else { %>
     <h3>Player 1 did not capture any pieces</h3>
 <% } %>
 <h3>Player 2 (Black) Captured Pieces:</h3>
 <% if (game.p2CapturedPieces.length > 0) { %>
-    <div id="player2pieces">
-        <% game.p2CapturedPieces.forEach(piece => { %>
-            <% if (piece !== "") { %>
-                <img src="/images/<%= piece %>.png">
-            <% } %>
-        <% }); %>
-    </div>
+    <div id="player2pieces"></div>
 <% } else { %>
     <h3>Player 2 did not capture any pieces</h3>
 <% } %>
+<script src="/js/gamehistory.js"></script>
 </body>
 </html>
