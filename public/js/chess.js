@@ -69,23 +69,43 @@ var Chess = function (fen) {
 
 
   // prettier-ignore
+  /*
+  Formula for calculating an ATTACKS ray:
+  new ATTACKS element =  old ATTACKS element + (1 << (highest SHIFT value + 1))
+
+  Example:
+  var input = 152
+  var bitshift = 1 << 8
+  new ATTACKS element is 152 + (1 << 8)
+   */
   var ATTACKS = [
-    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
-     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-    24,24,24,24,24,24,56,  0, 56,24,24,24,24,24,24, 0,
-     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20
+    20, 0, 0, 0, 0, 0, 0, 216,  0, 0, 0, 0, 0, 0,20, 0,
+     0,20, 0, 0, 0, 0, 0, 216,  0, 0, 0, 0, 0,20, 0, 0,
+     0, 0,20, 0, 0, 0, 0, 216,  0, 0, 0, 0,20, 0, 0, 0,
+     0, 0, 0,20, 0, 0, 0, 216,  0, 0, 0,20, 0, 0, 0, 0,
+     0, 0, 0, 0,20, 0, 0, 216,  0, 0,20, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,20, 2, 216,  2,20, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 2,117, 248, 117, 2, 0, 0, 0, 0, 0, 0,
+    88,88,88,88,88,88,120,  0, 120,88,88,88,88,88,88, 0,
+     0, 0, 0, 0, 0, 2,117, 376, 117, 2, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,20, 2, 344,  2,20, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0,20, 0, 0, 344,  0, 0,20, 0, 0, 0, 0, 0,
+     0, 0, 0,20, 0, 0, 0, 344,  0, 0, 0,20, 0, 0, 0, 0,
+     0, 0,20, 0, 0, 0, 0, 344,  0, 0, 0, 0,20, 0, 0, 0,
+     0,20, 0, 0, 0, 0, 0, 344,  0, 0, 0, 0, 0,20, 0, 0,
+    20, 0, 0, 0, 0, 0, 0, 344,  0, 0, 0, 0, 0, 0,20
   ];
+
+  /*
+  For every piece we want to add, make sure to increase the shifts
+  The dragon piece goes in the same direction, whether it is black or white
+  This means that we only need to add to the SHIFTS object
+  The lancer piece goes in different directions so we need to account for each direction,
+  so we add to the SHIFTS and BLACK_SHIFTS array
+   */
+
+  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5, d: 6, l: 7}
+  var BLACK_SHIFTS = {l: 8}
 
   // prettier-ignore
   var RAYS = [
@@ -105,8 +125,6 @@ var Chess = function (fen) {
       0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
     -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
   ];
-
-  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 }
 
   var FLAGS = {
     NORMAL: 'n',
@@ -532,50 +550,12 @@ var Chess = function (fen) {
         board[from].type === PAWN &&
         (rank(to) === RANK_8 || rank(to) === RANK_1)
       ) {
-        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, DRAGON, LANCER]
+        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, LANCER, DRAGON] //addpiece
         for (var i = 0, len = pieces.length; i < len; i++) {
           moves.push(build_move(board, from, to, flags, pieces[i]))
         }
       } else {
         moves.push(build_move(board, from, to, flags))
-      }
-    }
-
-    function generate_unlimited_moves(square, offset, board, moves, i, BITS, piece) {
-      while (true) {
-        // if (piece.type == 'l' && piece.color == 'b') {
-        //   offset = 16
-        // }
-        // else if (piece.type == 'l' && piece.color == 'w'){
-        //   offset = -16
-        // }
-        square += offset
-        if (square & 0x88) break
-        if (board[square] == null) {
-          add_move(board, moves, i, square, BITS.NORMAL)
-        } else {
-          if (board[square].color === us) break
-          add_move(board, moves, i, square, BITS.CAPTURE)
-          break
-        }
-
-        /* break, if knight or king */
-        if (piece.type === 'n' || piece.type === 'k') break
-      }
-    }
-
-    function generate_move_by_size(square, offset, board, moves, i, BITS, piece, numMoves) {
-      for(k = 0; k < numMoves; k++) {
-        square += offset
-        if (square & 0x88) break
-
-        if (board[square] == null) {
-          add_move(board, moves, i, square, BITS.NORMAL)
-        } else {
-          if (board[square].color === us) break
-          add_move(board, moves, i, square, BITS.CAPTURE)
-          break //milanreallychange
-        }
       }
     }
 
@@ -649,15 +629,7 @@ var Chess = function (fen) {
           }
         }
       } else if (piece_type === true || piece_type === piece.type) {
-        console.log(piece)
-        let piece_offset_array = PIECE_OFFSETS[piece.type]
-        /*
-        If a piece has offsets (directions) that are different when black, then set piece_offset_array to those
-        respective directions
-         */
-        if (piece.type in BLACK_PIECE_OFFSETS && piece.color === 'b') {
-          piece_offset_array = BLACK_PIECE_OFFSETS[piece.type]
-        }
+        let piece_offset_array = (piece.type in BLACK_PIECE_OFFSETS && piece.color === 'b') ? BLACK_PIECE_OFFSETS[piece.type] : PIECE_OFFSETS[piece.type]
         for (var j = 0, len = piece_offset_array.length; j < len; j++) {
           var offset_amount = piece_offset_array[j]
           var square = i
@@ -667,12 +639,38 @@ var Chess = function (fen) {
           a piece can move
           */
           if (offset_amount.constructor === Array) { //if offset is an array, this means that allowed moves are limited in jth direction
+            //generates moves based on number of spaces a piece can travel
             let numMoves = offset_amount[1]
             let offset_amount_for_limit = offset_amount[0]
-            generate_move_by_size(square, offset_amount_for_limit, board, moves, i, BITS, piece, numMoves)
+            for(k = 0; k < numMoves; k++) {
+              square += offset_amount_for_limit
+              if (square & 0x88) break
+
+              if (board[square] == null) {
+                add_move(board, moves, i, square, BITS.NORMAL)
+              } else {
+                if (board[square].color === us) break
+                add_move(board, moves, i, square, BITS.CAPTURE)
+                break
+              }
+            }
           }
           else {
-            generate_unlimited_moves(square, offset_amount, board, moves, i, BITS, piece)
+            //generates movements for sliding pieces (aka pieces that can travel an indefinite number of squares)
+            while (true) {
+              square += offset_amount
+              if (square & 0x88) break
+              if (board[square] == null) {
+                add_move(board, moves, i, square, BITS.NORMAL)
+              } else {
+                if (board[square].color === us) break
+                add_move(board, moves, i, square, BITS.CAPTURE)
+                break
+              }
+
+              /* break, if knight or king */
+              if (piece.type === 'n' || piece.type === 'k') break
+            }
           }
         }
       }
@@ -806,8 +804,9 @@ var Chess = function (fen) {
       var piece = board[i]
       var difference = i - square
       var index = difference + 119
+      let piece_shift = (piece.color === 'w' && piece.type in BLACK_SHIFTS) ? BLACK_SHIFTS[piece.type] : SHIFTS[piece.type]
 
-      if (ATTACKS[index] & (1 << SHIFTS[piece.type])) {
+      if ((ATTACKS[index] & (1 << piece_shift))) {
         if (piece.type === PAWN) {
           if (difference > 0) {
             if (piece.color === WHITE) return true

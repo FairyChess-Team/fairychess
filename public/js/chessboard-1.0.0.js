@@ -200,7 +200,6 @@
   }
 
   function validSquare (square) {
-    console.log(square)
     //this does
     var regex = new RegExp("/^[a-f][0-9][0-" + lastRowNumber + "]?$/", "g");
     return isString(square) && square.search() !== -1
