@@ -39,8 +39,10 @@ var Chess = function (fen) {
   var KING = 'k'
   var LANCER = 'l'
   var DRAGON = 'd'
+  var HORSE = 'h'
+  var TOKIN = 't'
 
-  var SYMBOLS = 'pnbrqkPNBRQKdDlL'
+  var SYMBOLS = 'pnbrqkPNBRQKdDlLhHtT'
 
   var DEFAULT_POSITION =
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
@@ -58,13 +60,16 @@ var Chess = function (fen) {
     r: [-16, 1, 16, -1],
     q: [-17, -16, -15, 1, 17, 16, 15, -1],
     k: [-17, -16, -15, 1, 17, 16, 15, -1],
-    l: [-16],
-    d: [[-17,1], -16, [-15,1], 1, [17, 1], 16, [15, 1], -1] //second element in each offset element (for ones that are arrays) is how many moves
+    l: [16],
+    d: [[-17,1], -16, [-15,1], 1, [17, 1], 16, [15, 1], -1], //second element in each offset element (for ones that are arrays) is how many moves
+    h: [-17, [-16, 1], -15, [1, 1], 17, [16, 1], 15, [-1, 1]],
+    t: [[-16, 1], [1,1], [17, 1], [16, 1], [15, 1], [-1, 1]]
   }
 
 
   var BLACK_PIECE_OFFSETS = {
-    l: [16]
+    l: [-16],
+    t: [[-17, 1], [-16, 1], [-15, 1], [1, 1], [16, 1], [-1, 1]]
   }
 
 
@@ -79,21 +84,21 @@ var Chess = function (fen) {
   new ATTACKS element is 152 + (1 << 8)
    */
   var ATTACKS = [
-    20, 0, 0, 0, 0, 0, 0, 216,  0, 0, 0, 0, 0, 0,20, 0,
-     0,20, 0, 0, 0, 0, 0, 216,  0, 0, 0, 0, 0,20, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 216,  0, 0, 0, 0,20, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 216,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 216,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 216,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0, 2,117, 248, 117, 2, 0, 0, 0, 0, 0, 0,
-    88,88,88,88,88,88,120,  0, 120,88,88,88,88,88,88, 0,
-     0, 0, 0, 0, 0, 2,117, 376, 117, 2, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 344,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 344,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 344,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 344,  0, 0, 0, 0,20, 0, 0, 0,
-     0,20, 0, 0, 0, 0, 0, 344,  0, 0, 0, 0, 0,20, 0, 0,
-    20, 0, 0, 0, 0, 0, 0, 344,  0, 0, 0, 0, 0, 0,20
+    532, 0, 0, 0, 0, 0, 0, 216,  0, 0, 0, 0, 0, 0,532, 0,
+     0,532, 0, 0, 0, 0, 0, 216,  0, 0, 0, 0, 0,532, 0, 0,
+     0, 0,532, 0, 0, 0, 0, 216,  0, 0, 0, 0,532, 0, 0, 0,
+     0, 0, 0,532, 0, 0, 0, 216,  0, 0, 0,532, 0, 0, 0, 0,
+     0, 0, 0, 0,532, 0, 0, 216,  0, 0,532, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,532, 2, 216,  2,532, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 2,1653, 3832, 1653, 2, 0, 0, 0, 0, 0, 0,
+    88,88,88,88,88,88,3704,  0, 3704,88,88,88,88,88,88, 0,
+     0, 0, 0, 0, 0, 2,2677, 3960, 2677, 2, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,532, 2, 344,  2,532, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0,532, 0, 0, 344,  0, 0,532, 0, 0, 0, 0, 0,
+     0, 0, 0,532, 0, 0, 0, 344,  0, 0, 0,532, 0, 0, 0, 0,
+     0, 0,532, 0, 0, 0, 0, 344,  0, 0, 0, 0,532, 0, 0, 0,
+     0,532, 0, 0, 0, 0, 0, 344,  0, 0, 0, 0, 0,532, 0, 0,
+    532, 0, 0, 0, 0, 0, 0, 344,  0, 0, 0, 0, 0, 0,532
   ];
 
   /*
@@ -104,8 +109,8 @@ var Chess = function (fen) {
   so we add to the SHIFTS and BLACK_SHIFTS array
    */
 
-  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5, d: 6, l: 7}
-  var BLACK_SHIFTS = {l: 8}
+  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5, d: 6, l: 7, h: 9, t: 10}
+  var BLACK_SHIFTS = {l: 8, t: 11}
 
   // prettier-ignore
   var RAYS = [
@@ -364,7 +369,7 @@ var Chess = function (fen) {
           sum_fields += parseInt(rows[i][k], 10)
           previous_was_number = true
         } else {
-          if (!/^[pnbrqkPNBRQKdDlL]$/.test(rows[i][k])) {
+          if (!/^[pnbrqkPNBRQKdDlLhHtT]$/.test(rows[i][k])) {
             return { valid: false, error_number: 9, error: errors[9] }
           }
           sum_fields += 1
@@ -550,7 +555,7 @@ var Chess = function (fen) {
         board[from].type === PAWN &&
         (rank(to) === RANK_8 || rank(to) === RANK_1)
       ) {
-        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, LANCER, DRAGON] //addpiece
+        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT, LANCER, DRAGON, HORSE, TOKIN] //addpiece
         for (var i = 0, len = pieces.length; i < len; i++) {
           moves.push(build_move(board, from, to, flags, pieces[i]))
         }
@@ -629,7 +634,7 @@ var Chess = function (fen) {
           }
         }
       } else if (piece_type === true || piece_type === piece.type) {
-        let piece_offset_array = (piece.type in BLACK_PIECE_OFFSETS && piece.color === 'b') ? BLACK_PIECE_OFFSETS[piece.type] : PIECE_OFFSETS[piece.type]
+        let piece_offset_array = (piece.type in BLACK_PIECE_OFFSETS && piece.color === 'w') ? BLACK_PIECE_OFFSETS[piece.type] : PIECE_OFFSETS[piece.type]
         for (var j = 0, len = piece_offset_array.length; j < len; j++) {
           var offset_amount = piece_offset_array[j]
           var square = i
@@ -1198,7 +1203,7 @@ var Chess = function (fen) {
     // this should parse invalid SAN like: Pe2-e4, Rc1c4, Qf3xf7
     if (sloppy) {
       var matches = clean_move.match(
-        /([pnbrqkPNBRQKdDlL])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
+        /([pnbrqkPNBRQKdDlLhHtT])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
       )
       if (matches) {
         var piece = matches[1]
@@ -1347,6 +1352,8 @@ var Chess = function (fen) {
     KING: KING,
     DRAGON: DRAGON,
     LANCER: LANCER,
+    HORSE: HORSE,
+    TOKIN: TOKIN,
     SQUARES: (function () {
       /* from the ECMA-262 spec (section 12.6.4):
        * "The mechanics of enumerating the properties ... is
