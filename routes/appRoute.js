@@ -1,35 +1,46 @@
 const express = require('express');
 const controller = require('../controllers/appController');
-const authentication = require('../middlewares/authentication');
+const {currentlyGuest, loggedIn} = require('../middlewares/authentication');
+const {validateEditedChessGame, validateLogin, validatePlayedChessGame, validateRegistration, validateResults, validateSearch} = require('../middlewares/validation');
 
 const router = express.Router();
 
 router.get('/', controller.index);
 
-router.post('/', controller.adduser)
+router.post('/', currentlyGuest, validateRegistration, validateResults,  controller.adduser)
 
-router.get('/editor', authentication.loggedIn, controller.editor);
+router.get('/editor', loggedIn, controller.editor);
 
-router.get('/editor/:id', authentication.loggedIn, controller.editexisting);
+router.get('/editor/:id', loggedIn, controller.editexisting);
 
-router.get('/login', authentication.currentlyGuest, controller.login);
+router.post('/editor', loggedIn, validateEditedChessGame, validateResults, controller.savegame);
 
-router.post('/login', authentication.currentlyGuest, controller.authenticate)
+router.put('/editor/:id', loggedIn, validateEditedChessGame, validateResults, controller.saveexistinggame)
 
-router.get('/new', authentication.currentlyGuest, controller.newuser);
+router.get('/login', currentlyGuest, controller.login);
 
-router.get('/preview/:id', authentication.loggedIn, controller.previewgame);
+router.post('/login', currentlyGuest, validateLogin, validateResults, controller.authenticate)
 
-router.get('/logout', authentication.loggedIn, controller.logout);
+router.get('/new', currentlyGuest, controller.newuser);
 
-router.get('/profile', authentication.loggedIn, controller.profile);
+router.get('/preview/:id', loggedIn, controller.previewgame);
 
-router.post('/save', authentication.loggedIn, controller.savegame);
+router.get('/logout', loggedIn, controller.logout);
 
-router.put('/save/:id', authentication.loggedIn, controller.saveexistinggame)
+router.get('/profile', loggedIn, controller.profile);
 
-router.delete('/delete/:id', authentication.loggedIn, controller.delete);
+router.post('/search', loggedIn, validateSearch, controller.searchgames);
 
-router.get('/thumbnail/:id', controller.generatethumbnail);
+router.delete('/delete/:id', loggedIn, controller.delete);
+
+router.get('/thumbnail/:id', loggedIn, controller.generatethumbnail);
+
+router.get('/play/:id', loggedIn, controller.player);
+
+router.post('/play', loggedIn, validatePlayedChessGame, controller.saveplayedgame)
+
+router.get('/previewplay/:id', loggedIn, controller.previewplayedgame);
+
+router.delete('/deleteplay/:id', loggedIn, controller.deleteplayedgame);
 
 module.exports = router;

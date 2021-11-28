@@ -1,11 +1,14 @@
 const dotenv = require("dotenv");
 const express = require('express');
+const flash = require('connect-flash');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
 const appRoutes = require('./routes/appRoute');
+const favicon = require('serve-favicon');
+const path = require('path');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -24,6 +27,7 @@ app.use(express.static('public'));
 app.use(express.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
+app.use(favicon(path.join(__dirname, "public", "images", "favicon.ico")));
 
 app.use(session(
 {
@@ -37,9 +41,14 @@ app.use(session(
     })
 }));
 
+app.use(flash());
+
 app.use((req, res, next) =>
 {
     res.locals.user = req.session.user || null;
+    res.locals.editorPieces = req.session.editorPieces || null;
+    res.locals.errors = req.flash('error');
+    res.locals.successes = req.flash('success');
     next();
 });
 

@@ -2,83 +2,19 @@ const userModel = require('../models/user');
 const gameModel = require('../models/game');
 const mongoose = require('mongoose');
 
-exports.index = (req, res, next) =>
+exports.index = (req, res) =>
 {
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        res.render('./main/index');
-    })
-    .catch(err => next(err))
+    res.render('./main/index');
 };
 
-exports.login = (req, res, next) =>
+exports.login = (req, res) =>
 {
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        res.render('./main/login');
-    })
-    .catch(err => next(err))
-}
-
-exports.editor = (req, res, next) =>
-{
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        res.render('./main/editor', {user: user, game: null});
-    })
-    .catch(err => next(err))
-}
-
-exports.editexisting = (req, res, next) =>
-{
-    let id = req.params.id;
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        let game = user.gamesCreated.find(game => game._id == id);
-        if (game)
-            res.render('./main/editor', {user, game});
-        else
-        {
-            let err = new Error(`You cannot edit the game with ID "${id}" as it does not exist on your account`);
-            err.status = 400;
-            next(err);
-        }
-
-    })
-    .catch(err => next(err))
-}
-
-exports.previewgame = (req, res, next) =>
-{
-    let id = req.params.id;
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        let game = user.gamesCreated.find(game => game._id == id);
-        if (game)
-            res.render('./main/previewer', {game});
-        else
-        {
-            let err = new Error(`You cannot preview the game with ID "${id}" as it does not exist on your account`);
-            err.status = 400;
-            next(err);
-        }
-    })
-    .catch(err => next(err))
+    res.render('./main/login');
 }
 
 exports.newuser = (req, res) =>
 {
-    userModel.findById(req.session.user)
-    .then(user =>
-    {
-        res.render('./main/new');
-    })
-    .catch(err => next(err))
+    res.render('./main/new');
 }
 
 exports.adduser = (req, res, next) =>
@@ -95,9 +31,8 @@ exports.adduser = (req, res, next) =>
     {
         if (err.code === 11000)
         {
-            err = new Error("Username has already been used");
-            err.status = 400;
-            return next(err);
+            req.flash('error', 'This email address has already been used');
+            return res.redirect('back');
         }
         next(err);
     });
@@ -119,17 +54,50 @@ exports.authenticate = (req, res, next) =>
                 if (result)
                 {
                     req.session.user = user._id;
+                    req.flash('success', 'Successfully logged in');
                     res.redirect('/');
                 }
                 else
                 {
+                    req.flash('error', 'Incorrect password provided');
                     res.redirect('/login');
                 }
             });
         }
         else
         {
+            req.flash('error', 'Incorrect email address provided');
             res.redirect('/login');
+        }
+    })
+    .catch(err => next(err));
+}
+
+exports.profile = (req, res, next) =>
+{
+    let user = req.session.user;
+    userModel.findById(user)
+    .then(user =>
+    {
+        res.render('./main/profile', {user});
+    })
+    .catch(err => next(err));
+}
+
+exports.searchgames = (req, res, next) =>
+{
+    let search = req.body.name;
+    let user = req.session.user;
+    userModel.findById(user)
+    .then(user =>
+    {
+        let games = user.gamesCreated.filter(game => game.title.includes(search));
+        if (games.length > 0)
+            res.render('./main/search', {games});
+        else
+        {
+            req.flash('error', `There are no games matching search term (${search})`);
+            res.redirect('back');
         }
     })
     .catch(err => next(err));
@@ -150,27 +118,130 @@ exports.logout = (req, res, next) =>
     });
 }
 
-exports.profile = (req, res, next) =>
+exports.editor = (req, res, next) =>
 {
-    let user = req.session.user;
-    userModel.findById(user)
+    userModel.findById(req.session.user)
     .then(user =>
     {
-        res.render('./main/profile', {user});
+        res.render('./main/editor', {user, game: null});
+    })
+    .catch(err => next(err))
+}
+
+exports.player = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/player', {user, game});
+        else
+        {
+            req.flash('error', 'You cannot play this game as it does not exist on your account');
+            res.redirect('/profile');
+        }
     })
     .catch(err => next(err));
 }
 
+exports.editexisting = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/editor', {user, game});
+        else
+        {
+            req.flash('error', 'You cannot modify this game as it does not exist on your account');
+            res.redirect('/profile');
+        }
+    })
+    .catch(err => next(err))
+}
+
+exports.delete = (req, res, next) =>
+{
+    let gameId = req.params.id;
+    let user = req.session.user;
+
+    userModel.updateOne(
+    {
+        _id: user
+    },
+    { 
+        $pull: 
+        { 
+            gamesCreated: 
+            {
+                _id: mongoose.Types.ObjectId(gameId)
+            }
+        }
+    })
+    .then(user =>
+    {
+        req.flash('success', 'Chess game deleted successfully');
+        res.redirect('/profile');
+    })
+    .catch(err => next(err));
+}
+
+exports.previewgame = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+        if (game)
+            res.render('./main/previewer', {game});
+        else
+        {
+            req.flash('error', 'You cannot preview this game as it does not exist on your account');
+            res.redirect('/profile')
+        }
+    })
+    .catch(err => next(err))
+}
+
+exports.previewplayedgame = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesPlayed.find(game => game._id == id);
+        if (game)
+            res.render('./main/gamehistory', {game});
+        else
+        {
+            req.flash('error', 'You cannot preview this game as it does not exist on your account');
+            res.redirect('/profile')
+        }
+    })
+    .catch(err => next(err))
+}
+
 exports.savegame = (req, res, next) =>
 {
+    if (req.body.chessPositions === "")
+    {
+        req.flash('error', 'Enter in some chess positions to continue');
+        return res.redirect('back');
+    }
     let game = gameModel(req.body);
     game.rating = 0;
-    game.p1CapturedPieces = new Array();
-    game.p2CapturedPieces = new Array();
+    game.p1CapturedPieces = "";
+    game.p2CapturedPieces = "";
     game.save()
     .then(result =>
     {
         let user = req.session.user;
+        req.session.editorPieces = req.body.chessPositions;
         userModel.updateOne(
             {
                 _id: user
@@ -182,8 +253,9 @@ exports.savegame = (req, res, next) =>
                 }
             }
         )
-        .then(user =>
+        .then(result =>
         {
+            req.flash('success', 'Chess game created successfully');
             res.redirect('/profile');
         })
         .catch(err => next(err));
@@ -194,54 +266,81 @@ exports.savegame = (req, res, next) =>
 exports.saveexistinggame = (req, res, next) =>
 {
     let gameId = req.params.id;
-    if (!req.body.chessPositions)
+    if (req.body.chessPositions === "")
     {
-        let error = new Error("Please enter in some chess positions to continue");
-        error.status = 400;
-        return next(error);
+        req.flash('error', 'Enter in some chess positions to continue');
+        return res.redirect('back');
     }
     let user = req.session.user;
+    req.session.editorPieces = req.body.chessPositions;
     userModel.findOneAndUpdate(
-        {
+    {
             _id: user,
             'gamesCreated._id': mongoose.Types.ObjectId(gameId)
-        },
+    },
+    {
+        $set:
         {
-            $set:
-            {
-                'gamesCreated.$.chessPositions': req.body.chessPositions,
-                'gamesCreated.$.title': req.body.title,
-                'gamesCreated.$.creator': req.body.creator,
-            }
+            'gamesCreated.$.chessPositions': req.body.chessPositions,
+            'gamesCreated.$.title': req.body.title,
+            'gamesCreated.$.creator': req.body.creator,
         }
-    )
+    })
     .then(result =>
     {
+        req.flash('success', 'Chess game updated successfully');
         res.redirect('/profile');
     })
     .catch(err => next(err))
 }
 
-exports.delete = (req, res, next) =>
+exports.saveplayedgame = (req, res, next) =>
+{
+    let game = new gameModel(req.body);
+    let user = req.session.user;
+    game.rating = 0;
+    game.p1CapturedPieces = req.body.player1captures;
+    game.p2CapturedPieces = req.body.player2captures;
+    userModel.updateOne(
+    {
+        _id: user
+    }, 
+    { 
+        $push: 
+        { 
+            gamesPlayed: game 
+        }
+    }
+    )
+    .then(result =>
+    {
+        req.flash('success', 'Chess game has been finished');
+        res.redirect('/profile');
+    })
+    .catch(err => next(err));
+}
+
+exports.deleteplayedgame = (req, res, next) =>
 {
     let gameId = req.params.id;
     let user = req.session.user;
 
     userModel.updateOne(
-        {
-            _id: user
-        },
+    {
+        _id: user
+    },
+    { 
+        $pull: 
         { 
-            $pull: 
-            { 
-                gamesCreated: 
-                {
-                    _id: mongoose.Types.ObjectId(gameId)
-                }
+            gamesPlayed: 
+            {
+                _id: mongoose.Types.ObjectId(gameId)
+            }
         }
     })
     .then(user =>
     {
+        req.flash('success', 'Played chess game deleted successfully');
         res.redirect('/profile');
     })
     .catch(err => next(err));
@@ -258,4 +357,4 @@ exports.generatethumbnail = (req, res, next) =>
             res.render('./main/thumbnail', {game});
     })
     .catch(err => next(err))
-} 
+}
