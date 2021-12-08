@@ -39,7 +39,6 @@ var onDrop = function (source, target) {
         promotion: 'q'
         // NOTE: always promote to a queen for example simplicity
     });
-    console.log(move)
     if (move === null) return 'snapback';
     if (move['captured']) {
         if (move['color'] === 'w') {

@@ -9,15 +9,60 @@ const methodOverride = require('method-override');
 const appRoutes = require('./routes/appRoute');
 const favicon = require('serve-favicon');
 const path = require('path');
+const http = require('http');
+const socket = require('socket.io');
+const router = express.Router();
+const {currentlyGuest, loggedIn} = require('./middlewares/authentication');
+var app = express()
+const controller = require('./controllers/appController');
+const server = http.createServer(app)
+const io = socket(server)
+const port = process.env.PORT || 3000
 
-const app = express();
+var numPlayers = 0
+
+//Whenever someone connects this gets executed
+io.on('connection', function(socket){
+    console.log('User connected');
+
+    socket.on('joined', function(msg) {
+        numPlayers = msg.numPlayers
+        if (numPlayers === "2")
+            msg.color = "black"
+        socket.emit('player', msg)
+    });
+
+    socket.on('play', function (roomId) {
+        socket.broadcast.emit('play', {roomId, numPlayers});
+    });
+
+
+    socket.on('move', function (msg) {
+        socket.broadcast.emit('move', msg);
+    });
+
+    //Whenever someone disconnects this piece of code executed
+    socket.on('disconnect', function () {
+        let a = ''
+        console.log('A user disconnected');
+        numPlayers = 1
+        io.emit('roomId_on_disconnect', {a})
+    });
+
+    socket.on('roomId_on_disconnect', function(msg) {
+        //route that directs controller through post request
+        //to eventually decrease numPlayers by 1
+        router.post('/disconnected/' + msg.roomId, loggedIn, controller.disconnected)
+    });
+});
+
 app.set('view engine', 'ejs');
 dotenv.config();
 
 mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_POINTER}`, 
                 {useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=>{
-    app.listen(process.env.PORT || 3000, () => { 
+    server.listen(port, () => {
         console.log('Server is running on port', 3000);
     });
 })

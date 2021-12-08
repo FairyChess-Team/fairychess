@@ -1,0 +1,32 @@
+<%- include('../partials/header.ejs')%>
+<h2 style="text-align: center;">Chess Game Multiplayer</h2>
+<h2 style="text-align: center;">Game ID: (<%= room.game %>)</h2>
+<h2 style="text-align: center;" id="state">Waiting for second player</h2>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<div class="container">
+    <!-- The chess board -->
+    <form>
+        <input type="hidden" id="FENstring" name="FENstring" value="8/6d1/2k5/5N2/8/6B1/4B3/2R3D1">
+        <input type="hidden" id="room" name="room" value="<%= room._id %>">
+        <input type="hidden" id="userId" name="userId" value="<%= user._id %>">
+        <input type="hidden" id="playerType" name="playerType" value="<%= playerType %>">
+        <input type="hidden" id="numPlayers" name="numPlayers" value="<%= room.numPlayers %>">
+    </form>
+    <div id="board" style="width: 500px; margin: auto">
+    </div>
+</div>
+<h3>Player 1 (White) Captured Pieces:</h3>
+<div id="player1pieces"></div>
+<h3>Player 2 (Black) Captured Pieces:</h3>
+<div id="player2pieces"></div>
+<body onload="connect()">
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/multiplayer.js"></script>
+
+
+
+
+
+
+
+

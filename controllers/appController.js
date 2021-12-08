@@ -1,6 +1,8 @@
 const userModel = require('../models/user');
 const gameModel = require('../models/game');
+const roomModel = require('../models/room')
 const mongoose = require('mongoose');
+const {multiplayer} = require("./appController");
 
 exports.index = (req, res) =>
 {
@@ -144,6 +146,79 @@ exports.player = (req, res, next) =>
         }
     })
     .catch(err => next(err));
+}
+
+exports.createroom = (req, res, next) =>
+{
+    let id = req.params.id;
+    userModel.findById(req.session.user)
+    .then(user =>
+    {
+        let game = user.gamesCreated.find(game => game._id == id);
+
+        if (game)
+        {
+            let room = new roomModel(req.body)
+            room.numPlayers = 0;
+            room.game = game._id
+            room.save()
+            .then(result =>
+            {
+                res.redirect('/multiplayer/' + result._id);
+            })
+            .catch(err => next(err));
+        }
+        else
+        {
+            req.flash('error', 'You cannot play this game as it does not exist on your account');
+            res.redirect('/profile');
+        }
+
+    })
+    .catch(err => next(err));
+}
+
+exports.multiplayer = (req, res, next) =>
+{
+    let id = req.params.id;
+    let userID = req.session.user
+    roomModel.findById(id)
+    .then(room =>
+    {
+        let user = userModel.findById(userID)
+        let numPlayers = room.numPlayers
+        let playerType = "player1"
+        let waitingForOtherPlayer = false
+        if (numPlayers == 0) {
+            room.numPlayers = 1
+            room.player1 = userID
+        } else if (numPlayers == 1) {
+            if (room.player1 != userID) {
+                room.numPlayers = 2
+                room.player2 = userID
+                playerType = "player2"
+            }
+        } else if (numPlayers == 2 && room.player1 != userID && room.player2 != userID) {
+            req.flash('error', 'You cannot join this game as it is full');
+            res.redirect('/profile');
+        }
+
+        room.save()
+        console.log(room)
+        res.render("./main/multiplayer", {user, room, playerType})
+
+    })
+    .catch(err => next(err));
+
+}
+
+exports.disconnected = (req, res, next) =>
+{
+    roomModel.findById(id)
+    .then(room =>
+    {
+        room.numPlayers = 1
+    })
 }
 
 exports.editexisting = (req, res, next) =>
