@@ -43,10 +43,9 @@ io.on('connection', function(socket){
 
     //Whenever someone disconnects this piece of code executed
     socket.on('disconnect', function () {
-        let a = ''
         console.log('A user disconnected');
         numPlayers = 1
-        io.emit('roomId_on_disconnect', {a})
+        io.emit('roomId_on_disconnect', {})
     });
 
     socket.on('roomId_on_disconnect', function(msg) {

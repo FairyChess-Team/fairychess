@@ -182,7 +182,7 @@ exports.multiplayer = (req, res, next) =>
 {
     let id = req.params.id;
     let userID = req.session.user
-    roomModel.findById(id)
+    roomModel.findById(id).populate('game',  'chessPositions')
     .then(room =>
     {
         let user = userModel.findById(userID)

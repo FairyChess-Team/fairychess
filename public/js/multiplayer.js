@@ -30,8 +30,24 @@ socket.on('play', function(msg) {
 
 socket.on('move', function (msg) {
     if (msg.room == roomId) {
-        let player1Captures = msg.player2Captures_server
-        let player2Captures = msg.player1Captures_server
+        let captured = (Object.keys(msg.player1Captures_server).length === 0) ? msg.player1Captures_server : msg.player2Captures_server
+        if (Object.keys(msg.player1Captures_server).length === 0) {
+            if (Object.keys(captured)[0] in player2Captures) {
+                player2Captures[Object.keys(player2Captures)[0]] = player2Captures[Object.keys(player2Captures)[0]] + 1
+            }
+            else {
+                player2Captures[Object.keys(captured)[0]] = captured[Object.keys(captured)[0]]
+            }
+        }
+        else {
+            if (Object.keys(captured)[0] in player1Captures) {
+                player1Captures[Object.keys(player1Captures)[0]] = player1Captures[Object.keys(player1Captures)[0]] + 1
+            }
+            else {
+                player1Captures[Object.keys(captured)[0]] = captured[Object.keys(captured)[0]]
+            }
+        }
+        //console.log(a)
         game.move(msg.move)
         board.position(game.fen());
         let move = msg.move;
@@ -57,11 +73,12 @@ socket.on('move', function (msg) {
                     //document.getElementById("player1captures").value += `/${piece}`;
                     sideAdjust.childNodes[0].appendChild(container);
                     document.getElementById("player1pieces").appendChild(sideAdjust);
+                    player1Captures[piece] = 1;
                 }
                 else
                 {
+                    player1Captures[piece]++;
                     //document.getElementById("player1captures").value += `/${piece}`;
-                    console.log("Piece: " + document.getElementById(piece))
                     document.getElementById(piece).textContent = player1Captures[piece];
                 }
             }
@@ -86,9 +103,11 @@ socket.on('move', function (msg) {
                     //document.getElementById("player2captures").value += `/${piece}`;
                     sideAdjust.childNodes[0].appendChild(container);
                     document.getElementById("player2pieces").appendChild(sideAdjust);
+                    player2Captures[piece] = 1;
                 }
                 else
                 {
+                    player2Captures[piece]++;
                     //document.getElementById("player2captures").value += `/${piece}`;
                     document.getElementById(piece).textContent = player2Captures[piece];
                 }
