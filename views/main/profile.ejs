@@ -23,7 +23,8 @@
                         <form>
                             <button formmethod="GET" formaction="/editor/<%= user.gamesCreated[i]._id %>">Edit</button>
                             <button formmethod="GET" formaction="/preview/<%= user.gamesCreated[i]._id %>">Preview</button>
-                            <button formmethod="GET" formaction="/play/<%= user.gamesCreated[i]._id %>">Play</button>
+                            <button formmethod="GET" formaction="/play/<%= user.gamesCreated[i]._id %>">Play against computer</button>
+                            <button formmethod="POST" formaction="/createroom/<%= user.gamesCreated[i]._id %>">Play against opponent</button>
                             <button type="submit" formmethod="POST" formaction="/delete/<%= user.gamesCreated[i]._id %>?_method=DELETE">Delete</button>
                         </form>
                         <br>
