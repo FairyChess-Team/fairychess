@@ -30,24 +30,6 @@ socket.on('play', function(msg) {
 
 socket.on('move', function (msg) {
     if (msg.room == roomId) {
-        let captured = (Object.keys(msg.player1Captures_server).length === 0) ? msg.player1Captures_server : msg.player2Captures_server
-        if (Object.keys(msg.player1Captures_server).length === 0) {
-            if (Object.keys(captured)[0] in player2Captures) {
-                player2Captures[Object.keys(player2Captures)[0]] = player2Captures[Object.keys(player2Captures)[0]] + 1
-            }
-            else {
-                player2Captures[Object.keys(captured)[0]] = captured[Object.keys(captured)[0]]
-            }
-        }
-        else {
-            if (Object.keys(captured)[0] in player1Captures) {
-                player1Captures[Object.keys(player1Captures)[0]] = player1Captures[Object.keys(player1Captures)[0]] + 1
-            }
-            else {
-                player1Captures[Object.keys(captured)[0]] = captured[Object.keys(captured)[0]]
-            }
-        }
-        //console.log(a)
         game.move(msg.move)
         board.position(game.fen());
         let move = msg.move;
@@ -221,7 +203,7 @@ var onDrop = function (source, target) {
         console.log(player1Captures)
         console.log(player2Captures)
         console.log(move)
-        socket.emit('move', { move: move, board: game.fen(), room: roomId, player1Captures_server: player1Captures, player2Captures_server: player2Captures });
+        socket.emit('move', { move: move, board: game.fen(), room: roomId });
 };
 
 var onMouseoverSquare = function (square, piece) {
