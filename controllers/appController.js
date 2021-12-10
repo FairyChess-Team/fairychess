@@ -182,7 +182,7 @@ exports.multiplayer = (req, res, next) =>
 {
     let id = req.params.id;
     let userID = req.session.user
-    roomModel.findById(id).populate('game',  'chessPositions')
+    roomModel.findById(id).populate('game',  'chessPositions title')
     .then(room =>
     {
         let user = userModel.findById(userID)
@@ -391,6 +391,27 @@ exports.saveplayedgame = (req, res, next) =>
     {
         req.flash('success', 'Chess game has been finished');
         res.redirect('/profile');
+    })
+    .catch(err => next(err));
+}
+
+exports.multiplayersaveplayedgame = (req, res, next) =>
+{
+    let game = new gameModel(req.body);
+    let user = req.session.user;
+    game.rating = 0;
+    game.p1CapturedPieces = req.body.player1captures;
+    game.p2CapturedPieces = req.body.player2captures;
+    game.title = req.body.title;
+    userModel.updateOne(
+    {
+        _id: user
+    },
+    {
+        $push:
+        {
+            gamesPlayed: game
+        }
     })
     .catch(err => next(err));
 }

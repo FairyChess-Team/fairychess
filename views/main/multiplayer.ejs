@@ -3,15 +3,23 @@
 <h2 style="text-align: center;">Room ID: (<%= room._id %>)</h2>
 <h2 style="text-align: center;">Game ID: (<%= room.game._id %>)</h2>
 <h2 style="text-align: center;" id="state">Waiting for second player</h2>
+<form style="text-align: center;">
+    <button id="exitButton" style="visibility:hidden;" formmethod="GET" formaction="/profile/">Return to profile</button>
+</form>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <div class="container">
     <!-- The chess board -->
-    <form>
+    <form action="/multiplayerplay" method="POST">
         <input type="hidden" id="FENstring" name="FENstring" value="<%= room.game.chessPositions %>">
+        <input type="hidden" id="title" name="title" value="<%= room.game.title %>">
+        <input type="hidden" id="chessPositions" name="chessPositions" value="">
         <input type="hidden" id="room" name="room" value="<%= room._id %>">
         <input type="hidden" id="userId" name="userId" value="<%= user._id %>">
         <input type="hidden" id="playerType" name="playerType" value="<%= playerType %>">
         <input type="hidden" id="numPlayers" name="numPlayers" value="<%= room.numPlayers %>">
+        <input type="hidden" id="player1captures" name="player1captures" value="">
+        <input type="hidden" id="player2captures" name="player2captures" value="">
+        <button style="display: none" id="finishGame"></button>
     </form>
     <div id="board" style="width: 500px; margin: auto">
     </div>

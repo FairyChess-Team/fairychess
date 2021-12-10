@@ -39,6 +39,8 @@ router.get('/play/:id', loggedIn, controller.player);
 
 router.post('/play', loggedIn, validatePlayedChessGame, controller.saveplayedgame)
 
+router.post('/multiplayerplay', loggedIn, validatePlayedChessGame, controller.multiplayersaveplayedgame)
+
 router.post('/createroom/:id', loggedIn, controller.createroom);
 
 router.get('/multiplayer/:id', loggedIn, controller.multiplayer)

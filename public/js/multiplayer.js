@@ -9,6 +9,7 @@ var socket = io()
 var userId = document.getElementById("userId").value
 var color = "white"
 var players;
+var exit = false;
 var play = true
 var roomId = document.getElementById("room").value
 var playerType = document.getElementById("playerType").value
@@ -52,7 +53,7 @@ socket.on('move', function (msg) {
                     number.setAttribute('id', piece)
                     container.appendChild(child);
                     container.appendChild(number);
-                    //document.getElementById("player1captures").value += `/${piece}`;
+                    document.getElementById("player1captures").value += `/${piece}`;
                     sideAdjust.childNodes[0].appendChild(container);
                     document.getElementById("player1pieces").appendChild(sideAdjust);
                     player1Captures[piece] = 1;
@@ -60,7 +61,7 @@ socket.on('move', function (msg) {
                 else
                 {
                     player1Captures[piece]++;
-                    //document.getElementById("player1captures").value += `/${piece}`;
+                    document.getElementById("player1captures").value += `/${piece}`;
                     document.getElementById(piece).textContent = player1Captures[piece];
                 }
             }
@@ -82,7 +83,7 @@ socket.on('move', function (msg) {
                     number.setAttribute('id', piece)
                     container.appendChild(child);
                     container.appendChild(number);
-                    //document.getElementById("player2captures").value += `/${piece}`;
+                    document.getElementById("player2captures").value += `/${piece}`;
                     sideAdjust.childNodes[0].appendChild(container);
                     document.getElementById("player2pieces").appendChild(sideAdjust);
                     player2Captures[piece] = 1;
@@ -90,9 +91,23 @@ socket.on('move', function (msg) {
                 else
                 {
                     player2Captures[piece]++;
-                    //document.getElementById("player2captures").value += `/${piece}`;
+                    document.getElementById("player2captures").value += `/${piece}`;
                     document.getElementById(piece).textContent = player2Captures[piece];
                 }
+            }
+        }
+        if(game.game_over()) {
+            document.getElementById("exitButton").style.visibility = "visible";
+            if (game.turn() == 'w')
+                state.innerHTML = "Game over. Black wins"
+            else
+                state.innerHTML = "Game over. White wins"
+
+            let button = document.getElementById("finishGame");
+            if (button)
+            {
+                document.getElementById('chessPositions').value = game.fen();
+                button.click();
             }
         }
     }
@@ -154,7 +169,7 @@ var onDrop = function (source, target) {
                 number.setAttribute('id', piece)
                 container.appendChild(child);
                 container.appendChild(number);
-                //document.getElementById("player1captures").value += `/${piece}`;
+                document.getElementById("player1captures").value += `/${piece}`;
                 sideAdjust.childNodes[0].appendChild(container);
                 document.getElementById("player1pieces").appendChild(sideAdjust);
                 player1Captures[piece] = 1;
@@ -162,7 +177,7 @@ var onDrop = function (source, target) {
             else
             {
                 player1Captures[piece]++;
-                //document.getElementById("player1captures").value += `/${piece}`;
+                document.getElementById("player1captures").value += `/${piece}`;
                 document.getElementById(piece).textContent = player1Captures[piece];
             }
         }
@@ -195,6 +210,20 @@ var onDrop = function (source, target) {
                 //document.getElementById("player2captures").value += `/${piece}`;
                 document.getElementById(piece).textContent = player2Captures[piece];
             }
+        }
+    }
+    if(game.game_over()) {
+        document.getElementById("exitButton").style.visibility = "visible";
+        if (game.turn() == 'w')
+            state.innerHTML = "Game over. Black wins"
+        else
+            state.innerHTML = "Game over. White wins"
+
+        let button = document.getElementById("finishGame");
+        if (button)
+        {
+            document.getElementById('chessPositions').value = game.fen();
+            button.click();
         }
     }
     // illegal move
