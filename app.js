@@ -48,6 +48,10 @@ io.on('connection', function(socket){
         io.emit('roomId_on_disconnect', {})
     });
 
+    socket.on('game_over', function(msg) {
+        socket.broadcast.emit(msg)
+    });
+
     socket.on('roomId_on_disconnect', function(msg) {
         //route that directs controller through post request
         //to eventually decrease numPlayers by 1

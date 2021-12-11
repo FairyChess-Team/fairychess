@@ -199,7 +199,7 @@ var onDrop = function (source, target) {
                 number.setAttribute('id', piece)
                 container.appendChild(child);
                 container.appendChild(number);
-                //document.getElementById("player2captures").value += `/${piece}`;
+                document.getElementById("player2captures").value += `/${piece}`;
                 sideAdjust.childNodes[0].appendChild(container);
                 document.getElementById("player2pieces").appendChild(sideAdjust);
                 player2Captures[piece] = 1;
@@ -207,7 +207,7 @@ var onDrop = function (source, target) {
             else
             {
                 player2Captures[piece]++;
-                //document.getElementById("player2captures").value += `/${piece}`;
+                document.getElementById("player2captures").value += `/${piece}`;
                 document.getElementById(piece).textContent = player2Captures[piece];
             }
         }
@@ -225,6 +225,8 @@ var onDrop = function (source, target) {
             document.getElementById('chessPositions').value = game.fen();
             button.click();
         }
+
+        socket.emit('game_over', {roomId})
     }
     // illegal move
     if (move === null) return 'snapback';
@@ -284,6 +286,18 @@ socket.on('player', function(msg)  {
     board = ChessBoard('board', cfg);
     socket.emit('play', roomId);
 });
+
+socket.on('game_over', function(msg) {
+    if (msg.roomId === roomId) {
+        let button = document.getElementById("finishGame");
+        if (button)
+        {
+            document.getElementById('chessPositions').value = game.fen();
+            button.click();
+        }
+    }
+
+})
 
 socket.on('roomId_on_disconnect', function(msg) {
     socket.emit('roomId_on_disconnect', {roomId, userId})

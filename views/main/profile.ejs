@@ -24,6 +24,7 @@
                             <button formmethod="GET" formaction="/editor/<%= user.gamesCreated[i]._id %>">Edit</button>
                             <button formmethod="GET" formaction="/preview/<%= user.gamesCreated[i]._id %>">Preview</button>
                             <button formmethod="GET" formaction="/play/<%= user.gamesCreated[i]._id %>">Play against computer</button>
+                            <br>
                             <button formmethod="POST" formaction="/createroom/<%= user.gamesCreated[i]._id %>">Play against opponent</button>
                             <button type="submit" formmethod="POST" formaction="/delete/<%= user.gamesCreated[i]._id %>?_method=DELETE">Delete</button>
                         </form>
@@ -39,18 +40,17 @@
     <% if (user.gamesPlayed.length > 0) { %>
         <% for (var i = 0; i < user.gamesPlayed.length; i++) { %>
             <% if (i % 6 == 0 && i != 0) { %>
-                <br><br>
             <% } %>
-            <div class='sideAdjust'>
-                <div class='itemAdjust'>
+            <div>
+                <div>
                     <p><%= user.gamesPlayed[i].title %></p>
                     <form>
                         <button formmethod="GET" formaction="/previewplay/<%= user.gamesPlayed[i]._id %>">View</button>
                         <button type="submit" formmethod="POST" formaction="/deleteplay/<%= user.gamesPlayed[i]._id %>?_method=DELETE">Delete</button>
                     </form>
-                    <br>
                 </div>
             </div>
+            <br>
         <% } %>
     <% } else { %>
         <h3>You do not have any games that you played. Go to the "Play" button on any game you create to play against a computer</h3>
