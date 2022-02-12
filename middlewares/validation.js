@@ -25,9 +25,9 @@ exports.validatePlayedChessGame =
 [
     body('title', 'Title cannot be empty').notEmpty().trim().escape(),
     body('creator', 'Creator cannot be empty').notEmpty().trim().escape(),
-    body('chessPositions', 'Chess positions cannot be empty').notEmpty().trim(),
-    body('player1captures', 'Player 1 captured pieces cannot be empty').notEmpty().trim(),
-    body('player2captures', 'Player 2 captured pieces cannot be empty').notEmpty().trim(),
+    body('chessPositions', 'Chess positions cannot be empty').notEmpty().trim().escape(),
+    body('player1captures', 'Player 1 captured pieces cannot be empty').notEmpty().trim().escape(),
+    body('player2captures', 'Player 2 captured pieces cannot be empty').notEmpty().trim().escape(),
 ];
 
 exports.validateSearch = 
