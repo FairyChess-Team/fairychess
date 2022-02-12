@@ -18,7 +18,7 @@ exports.validateEditedChessGame =
 [
     body('title', 'Title cannot be empty').notEmpty().trim().escape(),
     body('creator', 'Creator cannot be empty').notEmpty().trim().escape(),
-    body('chessPositions', 'Chess positions cannot be empty').notEmpty().trim()
+    body('chessPositions', 'Chess positions cannot be empty').notEmpty().trim().escape()
 ];
 
 exports.validatePlayedChessGame =
